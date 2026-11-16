@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Pedido Express - Modelo Demonstração</title>
+    <title>Pedido Express - Sistema Completo</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -13,59 +13,64 @@
             color: #111827;
             -webkit-tap-highlight-color: transparent;
         }
-        .header-banner {
-            background: linear-gradient(180deg, #ea580c 0%, #c2410c 100%);
+        .header-orange {
+            background: linear-gradient(135deg, #f97316 0%, #ea580c 50%, #c2410c 100%);
+        }
+        .btn-pill {
+            box-shadow: 0 2px 6px rgba(0,0,0,0.12);
         }
     </style>
 </head>
-<body class="bg-[#f3f4f6] min-h-screen max-w-md mx-auto pb-28 relative shadow-lg">
+<body class="bg-[#f3f4f6] min-h-screen max-w-md mx-auto pb-28 relative shadow-xl">
 
-    <!-- Topo: ✅ Ação concluída! -->
-    <div id="barra-acao" class="px-4 pt-3 pb-2 flex items-center gap-1.5 text-sm font-semibold text-gray-800">
-        <span>✅</span>
-        <span>Ação concluída!</span>
+    <!-- Topo: ✅ Ação concluída! + Botão Configurações -->
+    <div id="top-toast" class="px-4 pt-3 pb-2 flex items-center justify-between text-sm font-semibold text-gray-800 bg-[#f3f4f6]">
+        <div class="flex items-center gap-1.5">
+            <span>✅</span>
+            <span id="top-toast-msg">Ação concluída!</span>
+        </div>
+        <button onclick="abrirPainelConfig()" class="text-xs bg-white border border-gray-300 px-3 py-1.5 rounded-full font-bold text-gray-800 shadow-2xs active:scale-95 flex items-center gap-1">
+            <span>⚙️</span>
+            <span>Configurações</span>
+        </button>
     </div>
 
-    <!-- Banner Laranja (Idêntico ao print, sem o nome Telegás) -->
-    <header class="header-banner mx-3 rounded-xl p-4 text-gray-900 shadow-sm relative">
-        <div class="text-xl mb-1">🔥</div>
+    <!-- Cabeçalho Laranja -->
+    <header class="header-orange mx-3 rounded-2xl p-4 text-gray-950 shadow-md relative">
+        <div class="text-xl leading-none">🔥</div>
         
-        <h1 class="text-3xl font-extrabold tracking-tight text-gray-950 my-2">
+        <h1 id="header-nome-loja" class="text-3xl font-extrabold tracking-tight text-gray-950 my-2.5 leading-tight">
             Sua Loja Aqui
         </h1>
 
-        <div class="flex items-center gap-2 text-sm font-semibold text-gray-950 mt-2">
-            <span id="status-loja-texto">Aberto agora</span>
+        <div class="flex items-center gap-2 text-sm font-bold text-gray-950">
+            <span id="status-aberto-texto">Aberto agora</span>
             <span>☁️</span>
             <span>Online</span>
         </div>
 
         <div class="mt-2.5 flex items-center gap-2">
-            <button onclick="alternarModoBalcao()" id="btn-balcao" class="bg-white text-gray-800 text-xs font-semibold px-3 py-1 rounded-full shadow-xs inline-flex items-center gap-1.5 active:scale-95 transition">
+            <button onclick="alternarModoBalcao()" id="btn-balcao" class="btn-pill bg-white text-gray-800 text-xs font-bold px-3 py-1 rounded-full inline-flex items-center gap-1.5 active:scale-95 transition">
                 <span id="dot-balcao" class="w-2.5 h-2.5 rounded-full bg-gray-400"></span>
                 <span>Balcão</span>
-            </button>
-
-            <button onclick="toggleHorario()" class="bg-black/15 text-white text-xs font-medium px-2.5 py-1 rounded-full ml-auto">
-                Simular Horário
             </button>
         </div>
     </header>
 
     <!-- Seção: Acompanhe seu Pedido #0000 -->
-    <section id="painel-acompanhamento" class="px-4 pt-5 pb-4 border-b border-gray-200 bg-[#f3f4f6]">
+    <section id="secao-rastreio" class="px-4 pt-5 pb-4 border-b border-gray-200">
         <div class="flex items-center justify-between">
             <h2 class="text-2xl font-extrabold text-gray-950 tracking-tight">
-                Acompanhe seu Pedido <span id="pedido-numero">#0000</span>
+                Acompanhe seu Pedido <span id="rastreio-numero">#0000</span>
             </h2>
-            <button onclick="resetarPedido()" title="Fechar / Limpar" class="w-6 h-6 rounded-full bg-gray-200 text-gray-600 text-xs flex items-center justify-center font-bold hover:bg-gray-300">
+            <button onclick="fecharRastreio()" class="w-6 h-6 rounded-full bg-gray-200 text-gray-600 text-xs flex items-center justify-center font-bold hover:bg-gray-300">
                 ✕
             </button>
         </div>
 
         <div class="mt-3">
-            <div class="text-2xl mb-2" id="icone-status">⏳</div>
-            <p class="text-sm font-medium text-gray-900" id="texto-status-principal">
+            <div class="text-2xl mb-2" id="rastreio-icone">⏳</div>
+            <p class="text-sm font-semibold text-gray-900" id="rastreio-titulo">
                 Pedido enviado! Aguardando confirmação da loja...
             </p>
             <p class="text-sm text-gray-700 mt-3 leading-snug">
@@ -73,37 +78,36 @@
             </p>
         </div>
 
-        <!-- Lista Numerada 1 a 4 (Exatamente como na imagem) -->
         <ol class="mt-4 space-y-1 text-sm text-gray-900 font-medium list-decimal list-inside">
-            <li id="step-1" class="font-bold text-emerald-700">Enviado</li>
-            <li id="step-2" class="text-gray-500">Recebido</li>
-            <li id="step-3" class="text-gray-500">Saiu Entrega</li>
-            <li id="step-4" class="text-gray-500">Entregue</li>
+            <li id="passo-1" class="font-bold text-emerald-700">Enviado</li>
+            <li id="passo-2" class="text-gray-500">Recebido</li>
+            <li id="passo-3" class="text-gray-500">Saiu Entrega</li>
+            <li id="passo-4" class="text-gray-500">Entregue</li>
         </ol>
 
-        <div class="mt-3">
-            <button onclick="avancarStatusDemo()" class="text-xs bg-white border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg font-semibold shadow-2xs active:scale-95">
-                Avançar etapa (Demonstração)
+        <div class="mt-3 flex gap-2">
+            <button onclick="simularAvancoPedido()" class="text-xs bg-white border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg font-semibold shadow-2xs active:scale-95">
+                Simular Próxima Etapa
             </button>
         </div>
     </section>
 
-    <!-- Informações de Entrega (Exatamente como na imagem) -->
-    <section class="px-4 py-4 space-y-3 border-b border-gray-200">
+    <!-- Destaques de Entrega -->
+    <section class="px-4 py-4 space-y-2.5 border-b border-gray-200">
         <div class="text-xl">🛵</div>
-        <p class="text-sm font-medium text-gray-900">
+        <p class="text-sm font-semibold text-gray-900">
             Entrega Expressa • Instalação Grátis
         </p>
         <p class="text-sm text-gray-800 leading-snug">
             Levamos a maquininha até você • Pedido direto no WhatsApp
         </p>
-        <p class="text-sm font-medium text-gray-900">
+        <p class="text-sm font-semibold text-gray-900">
             Rápido
         </p>
     </section>
 
-    <!-- Bloco: Estamos fora do horário de entrega no momento -->
-    <section id="bloco-fora-horario" class="px-4 py-4 border-b border-gray-200">
+    <!-- Aviso de Horário de Entrega -->
+    <section id="secao-fora-horario" class="px-4 py-4 border-b border-gray-200">
         <div class="text-xl mb-2">⏰</div>
         <h3 class="text-lg font-extrabold text-gray-950 leading-tight">
             Estamos fora do horário de entrega no momento
@@ -113,245 +117,770 @@
         </p>
     </section>
 
-    <!-- Catálogo e Formulário de Pedido (Sem clientes cadastrados) -->
-    <main class="px-4 pt-5 space-y-5">
+    <!-- Catálogo de Produtos (Sem combos, regulador junto com mangueira) -->
+    <main class="px-4 pt-5 space-y-6">
         <div>
-            <h3 class="text-base font-extrabold text-gray-900 mb-3">Monte seu Pedido</h3>
-            <div id="lista-produtos" class="space-y-2.5">
-                <!-- Produtos renderizados via JS -->
+            <div class="flex items-center justify-between mb-3">
+                <h3 class="text-lg font-extrabold text-gray-950">Escolha seus Produtos</h3>
+                <span class="text-xs font-semibold text-orange-600 bg-orange-100 px-2.5 py-0.5 rounded-full">Entrega Grátis</span>
+            </div>
+            
+            <div id="grid-produtos" class="space-y-3">
+                <!-- Produtos carregados via JS -->
             </div>
         </div>
 
-        <!-- Dados do Cliente (Limpo, sem busca de cadastro) -->
-        <div class="bg-white p-4 rounded-2xl border border-gray-200 space-y-3 shadow-2xs">
-            <h4 class="font-bold text-sm text-gray-900">Seus Dados para Entrega</h4>
+        <!-- Dados do Cliente -->
+        <div class="bg-white p-4 rounded-2xl border border-gray-200 space-y-3.5 shadow-2xs">
+            <div class="flex items-center justify-between border-b border-gray-100 pb-2">
+                <h3 class="text-base font-extrabold text-gray-950">Dados para Entrega</h3>
+                <span class="text-[11px] text-gray-400">Cadastro automático</span>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-gray-700 mb-1">WhatsApp / Telefone *</label>
+                <div class="flex gap-2">
+                    <input type="tel" id="cli-telefone" onblur="buscarClientePorTelefone()" placeholder="(19) 99999-9999" class="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:outline-none focus:border-orange-500">
+                    <button type="button" onclick="buscarClientePorTelefone()" class="bg-gray-200 text-gray-800 px-3 rounded-xl text-xs font-bold shrink-0">Buscar</button>
+                </div>
+            </div>
             
             <div>
-                <label class="block text-xs font-semibold text-gray-600 mb-1">Nome Completo</label>
-                <input type="text" id="input-nome" placeholder="Digite seu nome" class="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:outline-none focus:border-orange-600">
+                <label class="block text-xs font-bold text-gray-700 mb-1">Seu Nome *</label>
+                <input type="text" id="cli-nome" placeholder="Ex: Maria Oliveira" class="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:outline-none focus:border-orange-500">
             </div>
 
-            <div>
-                <label class="block text-xs font-semibold text-gray-600 mb-1">Telefone / WhatsApp</label>
-                <input type="tel" id="input-telefone" placeholder="(00) 00000-0000" class="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:outline-none focus:border-orange-600">
+            <div id="box-endereco">
+                <label class="block text-xs font-bold text-gray-700 mb-1">Endereço Completo *</label>
+                <input type="text" id="cli-endereco" placeholder="Rua, Número, Bairro e Referência" class="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:outline-none focus:border-orange-500">
             </div>
 
-            <div id="campo-endereco">
-                <label class="block text-xs font-semibold text-gray-600 mb-1">Endereço Completo</label>
-                <input type="text" id="input-endereco" placeholder="Rua, número, bairro e referência" class="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:outline-none focus:border-orange-600">
-            </div>
-
-            <div class="grid grid-cols-2 gap-2.5">
+            <div class="grid grid-cols-2 gap-3">
                 <div>
-                    <label class="block text-xs font-semibold text-gray-600 mb-1">Pagamento</label>
-                    <select id="input-pagamento" class="w-full px-2.5 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:outline-none focus:border-orange-600">
+                    <label class="block text-xs font-bold text-gray-700 mb-1">Forma de Pagamento</label>
+                    <select id="cli-pagamento" class="w-full px-3 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:outline-none focus:border-orange-500">
                         <option value="Pix">Pix</option>
-                        <option value="Cartão (Maquininha)">Cartão (Maquininha)</option>
+                        <option value="Cartão de Débito">Cartão de Débito</option>
+                        <option value="Cartão de Crédito">Cartão de Crédito</option>
                         <option value="Dinheiro">Dinheiro</option>
                     </select>
                 </div>
+
                 <div>
-                    <label class="block text-xs font-semibold text-gray-600 mb-1">Cupom</label>
+                    <label class="block text-xs font-bold text-gray-700 mb-1">Cupom de Desconto</label>
                     <div class="flex gap-1">
-                        <input type="text" id="input-cupom" placeholder="PROMO10" class="w-full px-2.5 py-2 bg-gray-50 border border-gray-300 rounded-xl text-xs uppercase focus:outline-none focus:border-orange-600">
-                        <button onclick="aplicarCupom()" class="bg-gray-900 text-white px-2.5 rounded-xl text-xs font-bold">OK</button>
+                        <input type="text" id="cli-cupom" placeholder="Ex: GAS10" class="w-full px-2.5 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-xs uppercase focus:outline-none focus:border-orange-500">
+                        <button onclick="aplicarCupom()" class="bg-gray-900 text-white px-3 rounded-xl text-xs font-bold active:scale-95">OK</button>
                     </div>
                 </div>
+            </div>
+
+            <div id="box-troco" class="hidden">
+                <label class="block text-xs font-bold text-gray-700 mb-1">Troco para quanto?</label>
+                <input type="text" id="cli-troco" placeholder="Ex: Troco para R$ 150,00 (ou Sem troco)" class="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:outline-none focus:border-orange-500">
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-gray-700 mb-1">Observações (Opcional)</label>
+                <input type="text" id="cli-obs" placeholder="Ex: Portão branco, tocar campainha..." class="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:outline-none focus:border-orange-500">
             </div>
         </div>
     </main>
 
-    <!-- Rodapé Fixo de Finalização -->
-    <div class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white border-t border-gray-200 p-3.5 flex items-center justify-between z-40">
+    <!-- Rodapé Fixo de Resumo -->
+    <div class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white border-t border-gray-200 p-4 flex items-center justify-between shadow-[0_-4px_15px_rgba(0,0,0,0.06)] z-30">
         <div>
-            <span class="text-xs text-gray-500 block">Total (<span id="resumo-qtd">0</span> itens)</span>
-            <span class="text-lg font-extrabold text-gray-950" id="resumo-total">R$ 0,00</span>
+            <p class="text-xs text-gray-500 font-medium">Total (<span id="footer-qtd">0</span> itens)</p>
+            <p class="text-xl font-extrabold text-gray-950" id="footer-total">R$ 0,00</p>
         </div>
-        <button onclick="enviarPedido()" class="bg-[#ea580c] hover:bg-[#c2410c] text-white font-bold px-5 py-3 rounded-xl text-sm shadow-sm active:scale-95 transition">
-            Enviar Pedido no WhatsApp
+        <button onclick="finalizarPedido()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-5 py-3 rounded-2xl text-sm shadow-md flex items-center gap-2 active:scale-95 transition">
+            <span>Pedir no WhatsApp</span>
+            <span>➔</span>
         </button>
     </div>
 
+    <!-- PÁGINA DE CONFIGURAÇÃO COM ABAS (Loja, Produtos, Cupons e Clientes Cadastrados) -->
+    <div id="modal-config" class="hidden fixed inset-0 bg-gray-900/75 backdrop-blur-xs z-50 overflow-y-auto">
+        <div class="bg-white min-h-screen max-w-md mx-auto flex flex-col">
+            
+            <!-- Cabeçalho da Configuração -->
+            <div class="p-4 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white z-10">
+                <div>
+                    <h2 class="text-lg font-extrabold text-gray-950">⚙️ Painel de Gestão</h2>
+                    <p class="text-xs text-gray-500">Produtos, Cupons, Clientes e Loja</p>
+                </div>
+                <button onclick="fecharPainelConfig()" class="w-9 h-9 rounded-full bg-gray-100 text-gray-800 font-bold flex items-center justify-center hover:bg-gray-200">
+                    ✕
+                </button>
+            </div>
+
+            <!-- Navegação por Abas -->
+            <div class="grid grid-cols-4 border-b border-gray-200 bg-gray-50 text-xs font-bold sticky top-[69px] z-10">
+                <button onclick="mudarAbaConfig('produtos')" id="tab-btn-produtos" class="py-3 text-center border-b-2 border-orange-600 text-orange-600 bg-white">
+                    📦 Produtos
+                </button>
+                <button onclick="mudarAbaConfig('cupons')" id="tab-btn-cupons" class="py-3 text-center border-b-2 border-transparent text-gray-600">
+                    🎟️ Cupons
+                </button>
+                <button onclick="mudarAbaConfig('clientes')" id="tab-btn-clientes" class="py-3 text-center border-b-2 border-transparent text-gray-600">
+                    👥 Clientes
+                </button>
+                <button onclick="mudarAbaConfig('loja')" id="tab-btn-loja" class="py-3 text-center border-b-2 border-transparent text-gray-600">
+                    🏪 Loja
+                </button>
+            </div>
+
+            <!-- Conteúdo das Abas -->
+            <div class="p-4 flex-1 pb-24">
+
+                <!-- ABA 1: PRODUTOS E VALORES -->
+                <div id="tab-content-produtos" class="space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-extrabold text-sm text-gray-900">Produtos e Valores</h3>
+                            <p class="text-xs text-gray-500">Altere nomes, descrições e preços</p>
+                        </div>
+                        <button onclick="adicionarNovoProdutoConfig()" class="text-xs bg-orange-600 text-white font-bold px-3 py-2 rounded-xl shadow-2xs active:scale-95">
+                            + Novo Produto
+                        </button>
+                    </div>
+
+                    <div id="cfg-lista-produtos" class="space-y-3">
+                        <!-- Lista editável de produtos -->
+                    </div>
+                </div>
+
+                <!-- ABA 2: CUPONS DE DESCONTO -->
+                <div id="tab-content-cupons" class="hidden space-y-4">
+                    <div>
+                        <h3 class="font-extrabold text-sm text-gray-900">Gerenciar Cupons</h3>
+                        <p class="text-xs text-gray-500">Crie ou remova cupons promocionais</p>
+                    </div>
+
+                    <!-- Formulário Novo Cupom -->
+                    <div class="bg-gray-50 p-3.5 rounded-2xl border border-gray-200 space-y-2.5">
+                        <p class="text-xs font-bold text-gray-700">Adicionar Novo Cupom</p>
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="text" id="novo-cupom-codigo" placeholder="Código (Ex: PROMO10)" class="px-3 py-2 bg-white border border-gray-300 rounded-xl text-xs uppercase font-bold">
+                            <input type="number" step="0.01" id="novo-cupom-valor" placeholder="Desconto R$ (Ex: 10)" class="px-3 py-2 bg-white border border-gray-300 rounded-xl text-xs font-bold">
+                        </div>
+                        <button onclick="adicionarCupom()" class="w-full bg-gray-900 text-white font-bold py-2.5 rounded-xl text-xs active:scale-95">
+                            + Cadastrar Cupom
+                        </button>
+                    </div>
+
+                    <!-- Lista de Cupons Ativos -->
+                    <div id="cfg-lista-cupons" class="space-y-2">
+                        <!-- Renderizado via JS -->
+                    </div>
+                </div>
+
+                <!-- ABA 3: CLIENTES CADASTRADOS (Começa vazia para demonstração, salva novos pedidos automaticamente) -->
+                <div id="tab-content-clientes" class="hidden space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-extrabold text-sm text-gray-900">Clientes Cadastrados (<span id="total-clientes-count">0</span>)</h3>
+                            <p class="text-xs text-gray-500">Base limpa para demonstração (salva ao pedir)</p>
+                        </div>
+                        <button onclick="limparClientes()" class="text-xs text-red-600 font-bold bg-red-50 px-2.5 py-1.5 rounded-lg">
+                            Limpar Base
+                        </button>
+                    </div>
+
+                    <!-- Cadastro Manual Rápido -->
+                    <div class="bg-gray-50 p-3.5 rounded-2xl border border-gray-200 space-y-2">
+                        <p class="text-xs font-bold text-gray-700">Cadastrar Cliente Manualmente</p>
+                        <input type="text" id="novo-cli-nome" placeholder="Nome do cliente" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-xl text-xs">
+                        <input type="tel" id="novo-cli-tel" placeholder="WhatsApp / Telefone" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-xl text-xs">
+                        <input type="text" id="novo-cli-end" placeholder="Endereço completo" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-xl text-xs">
+                        <button onclick="cadastrarClienteManual()" class="w-full bg-gray-900 text-white font-bold py-2.5 rounded-xl text-xs active:scale-95">
+                            + Adicionar Cliente
+                        </button>
+                    </div>
+
+                    <div id="cfg-lista-clientes" class="space-y-2.5">
+                        <!-- Lista de clientes cadastrados -->
+                    </div>
+                </div>
+
+                <!-- ABA 4: CONFIGURAÇÕES DA LOJA -->
+                <div id="tab-content-loja" class="hidden space-y-4">
+                    <div class="bg-gray-50 p-4 rounded-2xl border border-gray-200 space-y-3">
+                        <h3 class="font-bold text-sm text-gray-900">Identidade e WhatsApp</h3>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 mb-1">Nome do Estabelecimento</label>
+                            <input type="text" id="cfg-nome-loja" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-xl text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 mb-1">WhatsApp de Recebimento (55 + DDD + Número)</label>
+                            <input type="text" id="cfg-whatsapp" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-xl text-sm">
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-50 p-4 rounded-2xl border border-gray-200 space-y-3">
+                        <h3 class="font-bold text-sm text-gray-900">Status de Funcionamento</h3>
+                        <label class="flex items-center justify-between bg-white p-3 rounded-xl border border-gray-200 cursor-pointer">
+                            <span class="text-sm font-semibold text-gray-800">Loja Aberta Agora</span>
+                            <input type="checkbox" id="cfg-loja-aberta" class="w-5 h-5 accent-orange-600">
+                        </label>
+                        <label class="flex items-center justify-between bg-white p-3 rounded-xl border border-gray-200 cursor-pointer">
+                            <span class="text-sm font-semibold text-gray-800">Exibir Aviso "Fora do Horário"</span>
+                            <input type="checkbox" id="cfg-fora-horario" class="w-5 h-5 accent-orange-600">
+                        </label>
+                    </div>
+
+                    <button onclick="restaurarPadrao()" class="w-full bg-gray-200 text-gray-800 font-bold py-3 rounded-xl text-xs">
+                        Restaurar Configurações Originais de Fábrica
+                    </button>
+                </div>
+
+            </div>
+
+            <!-- Rodapé Fixo de Salvar no Painel Config -->
+            <div class="p-4 border-t border-gray-200 bg-white sticky bottom-0 flex gap-3">
+                <button onclick="fecharPainelConfig()" class="w-1/3 bg-gray-100 text-gray-700 font-bold py-3 rounded-xl text-xs">
+                    Cancelar
+                </button>
+                <button onclick="salvarConfiguracoes()" class="w-2/3 bg-emerald-600 text-white font-bold py-3 rounded-xl text-sm shadow-md">
+                    Salvar Tudo
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // CONFIGURAÇÕES PARA DEMONSTRAÇÃO (Altere conforme o cliente)
-        const LOJA_CONFIG = {
-            nome: "Sua Loja Aqui",
-            whatsapp: "5519999999999", // Número do WhatsApp da loja com DDI e DDD
-            cupom: "PROMO10",
-            desconto: 10.00
+        // ESTADO INICIAL LIMPO (Sem nome da empresa, sem clientes cadastrados, sem combos, regulador junto com mangueira)
+        const ESTADO_PADRAO = {
+            nomeLoja: "Sua Loja Aqui",
+            whatsapp: "5519999999999",
+            lojaAberta: true,
+            foraHorario: true,
+            cupons: [
+                { codigo: "GAS10", desconto: 10.00, ativo: true },
+                { codigo: "PRIMEIRACOMPRA", desconto: 5.00, ativo: true }
+            ],
+            clientes: [], // Inicia vazio (sem clientes cadastrados)
+            produtos: [
+                {
+                    id: 1,
+                    nome: "Gás de Cozinha P13 (13kg)",
+                    descricao: "Botijão tradicional residencial • Entrega rápida e instalação grátis.",
+                    preco: 115.00,
+                    icone: "🔥",
+                    destaque: "Mais Pedido"
+                },
+                {
+                    id: 2,
+                    nome: "Gás P20 (Empilhadeira)",
+                    descricao: "Cilindro industrial para empilhadeiras • Troca rápida no local.",
+                    preco: 195.00,
+                    icone: "🏭",
+                    destaque: ""
+                },
+                {
+                    id: 3,
+                    nome: "Gás P45 (45kg Comercial)",
+                    descricao: "Ideal para restaurantes, padarias e condomínios.",
+                    preco: 430.00,
+                    icone: "🏢",
+                    destaque: ""
+                },
+                {
+                    id: 4,
+                    nome: "Galão de Água Mineral 20L",
+                    descricao: "Água mineral pura e lacrada (somente o líquido / troca de galão).",
+                    preco: 16.00,
+                    icone: "💧",
+                    destaque: ""
+                },
+                {
+                    id: 5,
+                    nome: "Regulador de Gás + Mangueira + Abraçadeiras",
+                    descricao: "Regulador de pressão com mangueira normativa e abraçadeiras • Instalação grátis.",
+                    preco: 55.00,
+                    icone: "🔧",
+                    destaque: ""
+                }
+            ]
         };
 
-        // PRODUTOS GENÉRICOS PARA DEMONSTRAÇÃO
-        const catalogo = [
-            { id: 1, nome: "Produto Exemplo 1", detalhe: "Entrega rápida e instalação grátis", preco: 110.00 },
-            { id: 2, nome: "Produto Exemplo 2", detalhe: "Retirada ou entrega expressa", preco: 85.00 },
-            { id: 3, nome: "Produto Exemplo 3", detalhe: "Item adicional / Complemento", preco: 18.00 }
-        ];
-
+        let appState = JSON.parse(localStorage.getItem('pedido_express_v3_state')) || JSON.parse(JSON.stringify(ESTADO_PADRAO));
         let carrinho = {};
-        let descontoAtivo = 0;
-        let etapaAtual = 1;
+        let cupomSelecionado = null;
         let modoBalcao = false;
-        let foraHorario = true; // Inicia visível como no print
+        let etapaRastreio = 1;
 
-        function renderizarCatalogo() {
-            const lista = document.getElementById('lista-produtos');
-            lista.innerHTML = catalogo.map(item => {
-                const qtd = carrinho[item.id] || 0;
+        function salvarNoStorage() {
+            localStorage.setItem('pedido_express_v3_state', JSON.stringify(appState));
+        }
+
+        function mostrarAviso(texto) {
+            document.getElementById('top-toast-msg').innerText = texto;
+        }
+
+        function aplicarEstadoNaTela() {
+            document.getElementById('header-nome-loja').innerText = appState.nomeLoja;
+            document.getElementById('status-aberto-texto').innerText = appState.lojaAberta ? "Aberto agora" : "Fechado agora";
+            
+            const secHorario = document.getElementById('secao-fora-horario');
+            if (appState.foraHorario) {
+                secHorario.classList.remove('hidden');
+            } else {
+                secHorario.classList.add('hidden');
+            }
+
+            renderizarProdutos();
+            atualizarResumo();
+        }
+
+        function renderizarProdutos() {
+            const container = document.getElementById('grid-produtos');
+            container.innerHTML = appState.produtos.map(prod => {
+                const qtd = carrinho[prod.id] || 0;
                 return `
-                    <div class="bg-white p-3.5 rounded-xl border border-gray-200 flex items-center justify-between gap-3">
-                        <div>
-                            <h4 class="font-bold text-sm text-gray-900">${item.nome}</h4>
-                            <p class="text-xs text-gray-500 mt-0.5">${item.detalhe}</p>
-                            <p class="font-extrabold text-sm text-[#ea580c] mt-1">R$ ${item.preco.toFixed(2).replace('.', ',')}</p>
+                    <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-2xs flex items-center justify-between gap-3">
+                        <div class="flex items-start gap-3">
+                            <div class="w-11 h-11 rounded-xl bg-orange-50 flex items-center justify-center text-2xl shrink-0">
+                                ${prod.icone || "📦"}
+                            </div>
+                            <div>
+                                <h4 class="font-extrabold text-sm text-gray-950 leading-snug">${prod.nome}</h4>
+                                ${prod.destaque ? `<span class="inline-block bg-orange-100 text-orange-700 text-[10px] font-bold px-2 py-0.5 rounded-full mt-0.5">${prod.destaque}</span>` : ''}
+                                <p class="text-xs text-gray-500 mt-1 leading-snug">${prod.descricao}</p>
+                                <p class="font-extrabold text-base text-orange-600 mt-1.5">R$ ${Number(prod.preco).toFixed(2).replace('.', ',')}</p>
+                            </div>
                         </div>
-                        <div class="flex items-center gap-2 bg-gray-100 p-1 rounded-lg">
-                            <button onclick="mudarQtd(${item.id}, -1)" class="w-7 h-7 bg-white rounded-md font-bold text-gray-800 shadow-2xs">-</button>
-                            <span class="w-5 text-center text-sm font-bold">${qtd}</span>
-                            <button onclick="mudarQtd(${item.id}, 1)" class="w-7 h-7 bg-[#ea580c] text-white rounded-md font-bold shadow-2xs">+</button>
+
+                        <div class="flex items-center gap-2 bg-gray-100 p-1 rounded-xl border border-gray-200 shrink-0">
+                            <button onclick="alterarQtd(${prod.id}, -1)" class="w-8 h-8 rounded-lg bg-white text-gray-800 font-bold shadow-2xs active:scale-90">-</button>
+                            <span class="w-5 text-center font-extrabold text-sm">${qtd}</span>
+                            <button onclick="alterarQtd(${prod.id}, 1)" class="w-8 h-8 rounded-lg bg-orange-600 text-white font-bold shadow-2xs active:scale-90">+</button>
                         </div>
                     </div>
                 `;
             }).join('');
         }
 
-        function mudarQtd(id, delta) {
+        function alterarQtd(id, delta) {
             const atual = carrinho[id] || 0;
             const novo = Math.max(0, atual + delta);
             if (novo === 0) delete carrinho[id];
             else carrinho[id] = novo;
-            renderizarCatalogo();
-            atualizarTotal();
-        }
-
-        function aplicarCupom() {
-            const val = document.getElementById('input-cupom').value.trim().toUpperCase();
-            if (val === LOJA_CONFIG.cupom) {
-                descontoAtivo = LOJA_CONFIG.desconto;
-                alert("Cupom aplicado: -R$ " + descontoAtivo.toFixed(2).replace('.', ','));
-            } else {
-                descontoAtivo = 0;
-                alert("Cupom inválido. Use PROMO10 para testar.");
-            }
-            atualizarTotal();
-        }
-
-        function atualizarTotal() {
-            let qtd = 0;
-            let soma = 0;
-            catalogo.forEach(p => {
-                const q = carrinho[p.id] || 0;
-                qtd += q;
-                soma += q * p.preco;
-            });
-            const final = Math.max(0, soma - (qtd > 0 ? descontoAtivo : 0));
-            document.getElementById('resumo-qtd').innerText = qtd;
-            document.getElementById('resumo-total').innerText = "R$ " + final.toFixed(2).replace('.', ',');
-            return { qtd, final };
+            renderizarProdutos();
+            atualizarResumo();
         }
 
         function alternarModoBalcao() {
             modoBalcao = !modoBalcao;
             const dot = document.getElementById('dot-balcao');
-            const campoEnd = document.getElementById('campo-endereco');
+            const boxEnd = document.getElementById('box-endereco');
             if (modoBalcao) {
                 dot.className = "w-2.5 h-2.5 rounded-full bg-emerald-500";
-                campoEnd.classList.add('hidden');
+                boxEnd.classList.add('hidden');
+                mostrarAviso("Modo Balcão ativado!");
             } else {
                 dot.className = "w-2.5 h-2.5 rounded-full bg-gray-400";
-                campoEnd.classList.remove('hidden');
+                boxEnd.classList.remove('hidden');
+                mostrarAviso("Modo Entrega ativado!");
             }
         }
 
-        function toggleHorario() {
-            foraHorario = !foraHorario;
-            const bloco = document.getElementById('bloco-fora-horario');
-            if (foraHorario) {
-                bloco.classList.remove('hidden');
+        document.getElementById('cli-pagamento').addEventListener('change', function() {
+            const boxTroco = document.getElementById('box-troco');
+            if (this.value === 'Dinheiro') {
+                boxTroco.classList.remove('hidden');
             } else {
-                bloco.classList.add('hidden');
+                boxTroco.classList.add('hidden');
+            }
+        });
+
+        function buscarClientePorTelefone() {
+            const telDigitado = document.getElementById('cli-telefone').value.replace(/\D/g, '');
+            if (telDigitado.length < 8) return;
+
+            const encontrado = appState.clientes.find(c => c.telefone.replace(/\D/g, '') === telDigitado);
+            if (encontrado) {
+                document.getElementById('cli-nome').value = encontrado.nome;
+                document.getElementById('cli-endereco').value = encontrado.endereco;
+                mostrarAviso(`Cliente localizado: ${encontrado.nome}`);
             }
         }
 
-        function avancarStatusDemo() {
-            etapaAtual = etapaAtual < 4 ? etapaAtual + 1 : 1;
-            atualizarSteps();
+        function aplicarCupom() {
+            const code = document.getElementById('cli-cupom').value.trim().toUpperCase();
+            const achado = appState.cupons.find(c => c.codigo.toUpperCase() === code && c.ativo);
+            if (achado) {
+                cupomSelecionado = achado;
+                mostrarAviso(`Cupom ${achado.codigo} aplicado! (-R$ ${Number(achado.desconto).toFixed(2).replace('.', ',')})`);
+            } else {
+                cupomSelecionado = null;
+                const exemplo = appState.cupons.length > 0 ? appState.cupons[0].codigo : "Nenhum ativo";
+                mostrarAviso(`Cupom inválido (Tente: ${exemplo})`);
+            }
+            atualizarResumo();
         }
 
-        function atualizarSteps() {
-            const textos = {
+        function atualizarResumo() {
+            let qtdTotal = 0;
+            let subtotal = 0;
+            appState.produtos.forEach(p => {
+                const q = carrinho[p.id] || 0;
+                qtdTotal += q;
+                subtotal += q * Number(p.preco);
+            });
+            const desconto = (qtdTotal > 0 && cupomSelecionado) ? Number(cupomSelecionado.desconto) : 0;
+            const total = Math.max(0, subtotal - desconto);
+            document.getElementById('footer-qtd').innerText = qtdTotal;
+            document.getElementById('footer-total').innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;
+            return { qtdTotal, total, subtotal, desconto };
+        }
+
+        function simularAvancoPedido() {
+            etapaRastreio = etapaRastreio < 4 ? etapaRastreio + 1 : 1;
+            atualizarVisualRastreio();
+        }
+
+        function atualizarVisualRastreio() {
+            const mensagens = {
                 1: "Pedido enviado! Aguardando confirmação da loja...",
-                2: "Pedido recebido e confirmado pela loja!",
-                3: "O entregador saiu para entrega!",
-                4: "Pedido entregue com sucesso!"
+                2: "Pedido recebido! Estamos separando seu pedido.",
+                3: "O entregador saiu para entrega! 🛵",
+                4: "Pedido entregue! Obrigado pela preferência."
             };
             const icones = { 1: "⏳", 2: "👍", 3: "🛵", 4: "✅" };
-            document.getElementById('texto-status-principal').innerText = textos[etapaAtual];
-            document.getElementById('icone-status').innerText = icones[etapaAtual];
+            document.getElementById('rastreio-titulo').innerText = mensagens[etapaRastreio];
+            document.getElementById('rastreio-icone').innerText = icones[etapaRastreio];
 
             for (let i = 1; i <= 4; i++) {
-                const el = document.getElementById('step-' + i);
-                if (i <= etapaAtual) {
-                    el.className = "font-bold text-emerald-700";
-                } else {
-                    el.className = "text-gray-500";
-                }
+                const el = document.getElementById('passo-' + i);
+                el.className = i <= etapaRastreio ? "font-bold text-emerald-700" : "text-gray-500";
             }
         }
 
-        function resetarPedido() {
-            document.getElementById('pedido-numero').innerText = "#0000";
-            etapaAtual = 1;
-            atualizarSteps();
+        function fecharRastreio() {
+            document.getElementById('rastreio-numero').innerText = "#0000";
+            etapaRastreio = 1;
+            atualizarVisualRastreio();
         }
 
-        function enviarPedido() {
-            const { qtd, final } = atualizarTotal();
-            if (qtd === 0) {
-                alert("Adicione pelo menos 1 produto para testar o pedido.");
+        function finalizarPedido() {
+            const { qtdTotal, total, desconto } = atualizarResumo();
+            if (qtdTotal === 0) {
+                alert("Selecione pelo menos 1 produto antes de enviar o pedido.");
                 return;
             }
 
-            const nome = document.getElementById('input-nome').value.trim() || "Cliente Teste";
-            const tel = document.getElementById('input-telefone').value.trim() || "Não informado";
-            const end = modoBalcao ? "Retirada no Balcão" : (document.getElementById('input-endereco').value.trim() || "Endereço não informado");
-            const pag = document.getElementById('input-pagamento').value;
+            const nome = document.getElementById('cli-nome').value.trim();
+            const tel = document.getElementById('cli-telefone').value.trim();
+            const end = document.getElementById('cli-endereco').value.trim();
+            const pag = document.getElementById('cli-pagamento').value;
+            const troco = document.getElementById('cli-troco').value.trim();
+            const obs = document.getElementById('cli-obs').value.trim();
 
-            const numAleatorio = "#" + Math.floor(1000 + Math.random() * 9000);
-            document.getElementById('pedido-numero').innerText = numAleatorio;
-            etapaAtual = 1;
-            atualizarSteps();
+            if (!nome) {
+                alert("Por favor, preencha seu nome.");
+                document.getElementById('cli-nome').focus();
+                return;
+            }
+            if (!modoBalcao && !end) {
+                alert("Por favor, preencha o endereço de entrega.");
+                document.getElementById('cli-endereco').focus();
+                return;
+            }
+
+            // Salva cliente na aba de Clientes Cadastrados automaticamente
+            if (tel) {
+                const telLimpo = tel.replace(/\D/g, '');
+                const idxExistente = appState.clientes.findIndex(c => c.telefone.replace(/\D/g, '') === telLimpo);
+                const dadosCliente = {
+                    id: Date.now(),
+                    nome: nome,
+                    telefone: tel,
+                    endereco: modoBalcao ? "Retirada no Balcão" : end,
+                    pedidos: idxExistente >= 0 ? (appState.clientes[idxExistente].pedidos + 1) : 1
+                };
+                if (idxExistente >= 0) {
+                    appState.clientes[idxExistente] = dadosCliente;
+                } else {
+                    appState.clientes.unshift(dadosCliente);
+                }
+                salvarNoStorage();
+            }
+
+            const numPedido = "#" + Math.floor(1000 + Math.random() * 9000);
+            document.getElementById('rastreio-numero').innerText = numPedido;
+            etapaRastreio = 1;
+            atualizarVisualRastreio();
+            mostrarAviso("Ação concluída!");
             window.scrollTo({ top: 0, behavior: 'smooth' });
 
-            let resumoItens = "";
-            catalogo.forEach(p => {
+            let itensMsg = "";
+            appState.produtos.forEach(p => {
                 if (carrinho[p.id]) {
-                    resumoItens += `- ${carrinho[p.id]}x ${p.nome}
-`;
+                    const sub = (carrinho[p.id] * Number(p.preco)).toFixed(2).replace('.', ',');
+                    itensMsg += `• ${carrinho[p.id]}x ${p.nome} (R$ ${sub})\n`;
                 }
             });
 
-            const msg = `*PEDIDO ${numAleatorio}*
-` +
-                `*Cliente:* ${nome}
-` +
-                `*Telefone:* ${tel}
-` +
-                `*Entrega:* ${end}
-` +
-                `*Pagamento:* ${pag}
+            let textoWhats = `*NOVO PEDIDO ${numPedido} - ${appState.nomeLoja.toUpperCase()}*\n\n` +
+                `👤 *Cliente:* ${nome}\n` +
+                `📱 *Telefone:* ${tel || 'Não informado'}\n` +
+                `📍 *Entrega:* ${modoBalcao ? 'Retirada no Balcão' : end}\n` +
+                `💳 *Pagamento:* ${pag}${pag === 'Dinheiro' && troco ? ' (' + troco + ')' : ''}\n`;
 
-` +
-                `*Itens:*
-${resumoItens}
-` +
-                `*Total:* R$ ${final.toFixed(2).replace('.', ',')}`;
+            if (desconto > 0 && cupomSelecionado) {
+                textoWhats += `🎟️ *Cupom:* ${cupomSelecionado.codigo} (-R$ ${desconto.toFixed(2).replace('.', ',')})\n`;
+            }
+            if (obs) {
+                textoWhats += `📝 *Obs:* ${obs}\n`;
+            }
 
-            const url = `https://wa.me/${LOJA_CONFIG.whatsapp}?text=${encodeURIComponent(msg)}`;
-            window.open(url, '_blank');
+            textoWhats += `\n*ITENS DO PEDIDO:*\n${itensMsg}\n` +
+                `💰 *TOTAL A PAGAR: R$ ${total.toFixed(2).replace('.', ',')}*`;
+
+            const link = `https://wa.me/${appState.whatsapp}?text=${encodeURIComponent(textoWhats)}`;
+            window.open(link, '_blank');
         }
 
-        renderizarCatalogo();
+        // NAVEGAÇÃO E FUNÇÕES DA PÁGINA DE CONFIGURAÇÕES
+        function abrirPainelConfig() {
+            document.getElementById('cfg-nome-loja').value = appState.nomeLoja;
+            document.getElementById('cfg-whatsapp').value = appState.whatsapp;
+            document.getElementById('cfg-loja-aberta').checked = appState.lojaAberta;
+            document.getElementById('cfg-fora-horario').checked = appState.foraHorario;
+
+            renderizarProdutosConfig();
+            renderizarCuponsConfig();
+            renderizarClientesConfig();
+            mudarAbaConfig('produtos');
+            document.getElementById('modal-config').classList.remove('hidden');
+        }
+
+        function fecharPainelConfig() {
+            document.getElementById('modal-config').classList.add('hidden');
+        }
+
+        function mudarAbaConfig(aba) {
+            const abas = ['produtos', 'cupons', 'clientes', 'loja'];
+            abas.forEach(nome => {
+                const btn = document.getElementById('tab-btn-' + nome);
+                const content = document.getElementById('tab-content-' + nome);
+                if (nome === aba) {
+                    btn.className = "py-3 text-center border-b-2 border-orange-600 text-orange-600 bg-white";
+                    content.classList.remove('hidden');
+                } else {
+                    btn.className = "py-3 text-center border-b-2 border-transparent text-gray-600";
+                    content.classList.add('hidden');
+                }
+            });
+        }
+
+        // ABA PRODUTOS
+        function renderizarProdutosConfig() {
+            const lista = document.getElementById('cfg-lista-produtos');
+            lista.innerHTML = appState.produtos.map((p, idx) => `
+                <div class="bg-gray-50 p-3.5 rounded-2xl border border-gray-200 space-y-2.5">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs font-extrabold text-orange-600">Produto #${idx + 1}</span>
+                        <button onclick="removerProdutoConfig(${idx})" class="text-xs text-red-600 font-bold">Excluir</button>
+                    </div>
+                    <div class="grid grid-cols-4 gap-2">
+                        <div>
+                            <label class="text-[10px] text-gray-500 block">Ícone</label>
+                            <input type="text" id="cfg-prod-icone-${idx}" value="${p.icone}" class="w-full px-2 py-1.5 bg-white border border-gray-300 rounded-lg text-center text-sm">
+                        </div>
+                        <div class="col-span-3">
+                            <label class="text-[10px] text-gray-500 block">Nome do Produto</label>
+                            <input type="text" id="cfg-prod-nome-${idx}" value="${p.nome}" class="w-full px-2.5 py-1.5 bg-white border border-gray-300 rounded-lg text-xs font-bold">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="text-[10px] text-gray-500 block">Descrição</label>
+                        <input type="text" id="cfg-prod-desc-${idx}" value="${p.descricao}" class="w-full px-2.5 py-1.5 bg-white border border-gray-300 rounded-lg text-xs">
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="text-[10px] text-gray-500 block">Valor (R$)</label>
+                            <input type="number" step="0.01" id="cfg-prod-preco-${idx}" value="${p.preco}" class="w-full px-2.5 py-1.5 bg-white border border-gray-300 rounded-lg text-xs font-extrabold text-emerald-700">
+                        </div>
+                        <div>
+                            <label class="text-[10px] text-gray-500 block">Selo / Etiqueta</label>
+                            <input type="text" id="cfg-prod-dest-${idx}" value="${p.destaque || ''}" placeholder="Ex: Mais Pedido" class="w-full px-2.5 py-1.5 bg-white border border-gray-300 rounded-lg text-xs">
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function sincronizarInputsProdutosTemp() {
+            appState.produtos.forEach((p, idx) => {
+                const elNome = document.getElementById(`cfg-prod-nome-${idx}`);
+                if (elNome) {
+                    p.icone = document.getElementById(`cfg-prod-icone-${idx}`).value || "📦";
+                    p.nome = elNome.value;
+                    p.descricao = document.getElementById(`cfg-prod-desc-${idx}`).value;
+                    p.preco = parseFloat(document.getElementById(`cfg-prod-preco-${idx}`).value) || 0;
+                    p.destaque = document.getElementById(`cfg-prod-dest-${idx}`).value;
+                }
+            });
+        }
+
+        function adicionarNovoProdutoConfig() {
+            sincronizarInputsProdutosTemp();
+            appState.produtos.push({
+                id: Date.now(),
+                nome: "Novo Item",
+                descricao: "Descrição do item",
+                preco: 50.00,
+                icone: "📦",
+                destaque: ""
+            });
+            renderizarProdutosConfig();
+        }
+
+        function removerProdutoConfig(idx) {
+            sincronizarInputsProdutosTemp();
+            appState.produtos.splice(idx, 1);
+            renderizarProdutosConfig();
+        }
+
+        // ABA CUPONS
+        function renderizarCuponsConfig() {
+            const lista = document.getElementById('cfg-lista-cupons');
+            if (appState.cupons.length === 0) {
+                lista.innerHTML = `<p class="text-xs text-gray-400 text-center py-4">Nenhum cupom cadastrado.</p>`;
+                return;
+            }
+            lista.innerHTML = appState.cupons.map((c, idx) => `
+                <div class="bg-white p-3 rounded-xl border border-gray-200 flex items-center justify-between">
+                    <div>
+                        <span class="font-extrabold text-sm text-gray-900">${c.codigo}</span>
+                        <span class="ml-2 text-xs font-bold text-emerald-600">- R$ ${Number(c.desconto).toFixed(2).replace('.', ',')}</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="alternarStatusCupom(${idx})" class="text-[11px] font-bold px-2.5 py-1 rounded-lg ${c.ativo ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-200 text-gray-600'}">
+                            ${c.ativo ? 'Ativo' : 'Pausado'}
+                        </button>
+                        <button onclick="removerCupom(${idx})" class="text-xs text-red-600 font-bold px-1">✕</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function adicionarCupom() {
+            const cod = document.getElementById('novo-cupom-codigo').value.trim().toUpperCase();
+            const val = parseFloat(document.getElementById('novo-cupom-valor').value);
+            if (!cod || isNaN(val) || val <= 0) {
+                alert("Preencha o código e um valor válido para o desconto.");
+                return;
+            }
+            appState.cupons.push({ codigo: cod, desconto: val, ativo: true });
+            document.getElementById('novo-cupom-codigo').value = "";
+            document.getElementById('novo-cupom-valor').value = "";
+            renderizarCuponsConfig();
+        }
+
+        function alternarStatusCupom(idx) {
+            appState.cupons[idx].ativo = !appState.cupons[idx].ativo;
+            renderizarCuponsConfig();
+        }
+
+        function removerCupom(idx) {
+            appState.cupons.splice(idx, 1);
+            renderizarCuponsConfig();
+        }
+
+        // ABA CLIENTES CADASTRADOS
+        function renderizarClientesConfig() {
+            const lista = document.getElementById('cfg-lista-clientes');
+            document.getElementById('total-clientes-count').innerText = appState.clientes.length;
+
+            if (appState.clientes.length === 0) {
+                lista.innerHTML = `
+                    <div class="bg-gray-50 border border-dashed border-gray-300 rounded-2xl p-6 text-center">
+                        <p class="text-xs font-semibold text-gray-500">Nenhum cliente cadastrado ainda.</p>
+                        <p class="text-[11px] text-gray-400 mt-1">Os clientes são salvos aqui automaticamente ao fazerem um pedido ou pelo cadastro acima.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            lista.innerHTML = appState.clientes.map((c, idx) => `
+                <div class="bg-white p-3.5 rounded-xl border border-gray-200 flex items-start justify-between gap-2">
+                    <div>
+                        <p class="font-extrabold text-sm text-gray-900">${c.nome}</p>
+                        <p class="text-xs text-orange-600 font-semibold">${c.telefone}</p>
+                        <p class="text-xs text-gray-500 mt-0.5">${c.endereco}</p>
+                        <span class="inline-block mt-1 text-[10px] bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full font-bold">
+                            ${c.pedidos || 1} pedido(s)
+                        </span>
+                    </div>
+                    <button onclick="removerCliente(${idx})" class="text-xs text-red-600 font-bold p-1">✕</button>
+                </div>
+            `).join('');
+        }
+
+        function cadastrarClienteManual() {
+            const nome = document.getElementById('novo-cli-nome').value.trim();
+            const telefone = document.getElementById('novo-cli-tel').value.trim();
+            const endereco = document.getElementById('novo-cli-end').value.trim();
+
+            if (!nome || !telefone) {
+                alert("Informe pelo menos nome e telefone do cliente.");
+                return;
+            }
+
+            appState.clientes.unshift({
+                id: Date.now(),
+                nome,
+                telefone,
+                endereco: endereco || "Endereço não informado",
+                pedidos: 0
+            });
+
+            document.getElementById('novo-cli-nome').value = "";
+            document.getElementById('novo-cli-tel').value = "";
+            document.getElementById('novo-cli-end').value = "";
+            renderizarClientesConfig();
+        }
+
+        function removerCliente(idx) {
+            appState.clientes.splice(idx, 1);
+            renderizarClientesConfig();
+        }
+
+        function limparClientes() {
+            if (confirm("Deseja zerar toda a lista de clientes cadastrados?")) {
+                appState.clientes = [];
+                renderizarClientesConfig();
+            }
+        }
+
+        // SALVAR E RESTAURAR
+        function salvarConfiguracoes() {
+            sincronizarInputsProdutosTemp();
+            appState.nomeLoja = document.getElementById('cfg-nome-loja').value.trim() || "Sua Loja Aqui";
+            appState.whatsapp = document.getElementById('cfg-whatsapp').value.trim() || "5519999999999";
+            appState.lojaAberta = document.getElementById('cfg-loja-aberta').checked;
+            appState.foraHorario = document.getElementById('cfg-fora-horario').checked;
+
+            salvarNoStorage();
+            aplicarEstadoNaTela();
+            fecharPainelConfig();
+            mostrarAviso("Configurações salvas!");
+        }
+
+        function restaurarPadrao() {
+            if (confirm("Restaurar os itens, preços e configurações originais?")) {
+                localStorage.removeItem('pedido_express_v3_state');
+                appState = JSON.parse(JSON.stringify(ESTADO_PADRAO));
+                aplicarEstadoNaTela();
+                fecharPainelConfig();
+                mostrarAviso("Padrão restaurado!");
+            }
+        }
+
+        aplicarEstadoNaTela();
     </script>
 </body>
 </html>
