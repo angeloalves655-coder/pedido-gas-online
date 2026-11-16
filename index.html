@@ -3,9 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Chama Rápida Gás • Pedidos Online (Demonstração)</title>
+  <title>Telegás São Domingos • Pedidos Online</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+  <!-- Firebase SDK (Compat para funcionamento direto em HTML) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -49,14 +52,14 @@
           🔥
         </div>
         <div>
-          <h1 id="store-name-display" class="font-extrabold text-lg leading-tight tracking-tight">Chama Rápida Gás</h1>
+          <h1 id="store-name-display" class="font-extrabold text-lg leading-tight tracking-tight">Telegás São Domingos</h1>
           <div class="flex items-center gap-2 mt-0.5">
             <span id="status-badge" class="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-100 border border-emerald-400/30">
               <span id="status-dot" class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
               <span id="status-text">Aberto agora</span>
             </span>
-            <span id="cloud-sync-badge" title="Modo Demonstração" class="text-[10px] font-bold bg-white/15 text-white px-2 py-0.5 rounded-full">
-              ✨ Demo
+            <span id="cloud-sync-badge" title="Sincronizado na nuvem" class="hidden text-[10px] font-bold bg-white/15 text-white px-2 py-0.5 rounded-full">
+              ☁️ Online
             </span>
           </div>
         </div>
@@ -131,9 +134,9 @@
 
       <div class="space-y-3">
         <div>
-          <label class="block text-xs font-semibold text-gray-600 mb-1">WhatsApp / Telefone (teste com: (11) 98888-7777)</label>
+          <label class="block text-xs font-semibold text-gray-600 mb-1">WhatsApp / Telefone (preenche automático se já pediu)</label>
           <div class="relative">
-            <input type="tel" id="cust-phone" oninput="handlePhoneInput(this)" placeholder="(11) 99999-9999" maxlength="15"
+            <input type="tel" id="cust-phone" oninput="handlePhoneInput(this)" placeholder="(19) 99999-9999" maxlength="15"
               class="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium focus:bg-white focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 outline-none transition" />
             <span id="customer-found-badge" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-[11px] font-bold bg-emerald-100 text-emerald-700 px-2.5 py-0.5 rounded-full">
               Cliente cadastrado ✓
@@ -168,14 +171,14 @@
           </div>
           <div>
             <label class="block text-xs font-semibold text-gray-600 mb-1">Bairro</label>
-            <input type="text" id="cust-neighborhood" placeholder="Ex: Centro"
+            <input type="text" id="cust-neighborhood" placeholder="Ex: São Domingos"
               class="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium focus:bg-white focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 outline-none transition" />
           </div>
         </div>
 
         <div>
           <label class="block text-xs font-semibold text-gray-600 mb-1">Cidade / Ponto de Referência</label>
-          <input type="text" id="cust-ref" placeholder="Ex: Sua Cidade / Próximo ao mercado"
+          <input type="text" id="cust-ref" placeholder="Ex: Americana / Próximo ao mercado"
             class="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium focus:bg-white focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 outline-none transition" />
         </div>
       </div>
@@ -233,7 +236,7 @@
       <div id="pix-box" class="mt-3 bg-emerald-50 border border-emerald-200 rounded-xl p-3 flex items-center justify-between gap-2">
         <div class="overflow-hidden">
           <p class="text-[11px] font-bold text-emerald-800 uppercase tracking-wider">Chave Pix (Copiar)</p>
-          <p id="pix-key-display" class="text-xs font-bold text-emerald-950 truncate mt-0.5">00.000.000/0001-00</p>
+          <p id="pix-key-display" class="text-xs font-bold text-emerald-950 truncate mt-0.5">19994604562</p>
         </div>
         <button type="button" onclick="copyPixKey()" class="shrink-0 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white text-xs font-bold px-3 py-2 rounded-lg transition">
           Copiar Chave
@@ -251,7 +254,7 @@
       <div class="mt-3 pt-2.5 border-t border-gray-100">
         <label class="inline-flex items-center gap-2 text-xs font-semibold text-gray-700 cursor-pointer select-none">
           <input type="checkbox" id="has-company-coupon" onchange="toggleCouponField()" class="w-4 h-4 accent-orange-600 rounded" />
-          <span>🎟️ Tenho cupom de desconto (teste: DEMO10)</span>
+          <span>🎟️ Tenho cupom de desconto</span>
         </label>
         <div id="coupon-input-box" class="hidden mt-2 space-y-1.5">
           <input type="text" id="coupon-code" oninput="handleCouponInput()" placeholder="Digite o código do cupom"
@@ -268,7 +271,7 @@
       </div>
     </section>
 
-    <!-- Localização / Portaria + Horários + Atendimento WhatsApp & Avaliação Google -->
+    <!-- Localização / Portaria + Horários & Avaliação Google -->
     <section class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 space-y-3.5">
 
       <!-- Endereço da Revenda + Botão GPS -->
@@ -278,12 +281,12 @@
           <div>
             <p class="text-xs font-extrabold text-gray-900">Retirada na Portaria / Nossa Loja</p>
             <p id="store-address-display" class="text-[11px] text-gray-600 leading-snug mt-0.5">
-              Avenida Brasil, 1000 - Centro, Sua Cidade - SP
+              Avenida São Jerônimo, 1459 - São Domingos, Americana - SP
             </p>
           </div>
         </div>
         <a id="store-gps-link"
-          href="https://www.google.com/maps/search/?api=1&query=Avenida+Brasil+1000"
+          href="https://www.google.com/maps/search/?api=1&query=Avenida+Sao+Jeronimo+1459+Sao+Domingos+Americana+SP"
           target="_blank"
           rel="noopener noreferrer"
           class="shrink-0 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white text-xs font-bold px-3 py-2.5 rounded-xl shadow-sm flex items-center gap-1.5 transition">
@@ -304,25 +307,12 @@
         </div>
       </div>
 
-      <!-- Botão WhatsApp Falar com Atendente -->
-      <div class="pt-2.5 border-t border-gray-100 flex items-center justify-between gap-2">
-        <div>
-          <p class="text-xs font-bold text-gray-800">Ficou com alguma dúvida?</p>
-          <p class="text-[11px] text-gray-500">Converse direto com nossa equipe no WhatsApp</p>
-        </div>
-        <a id="attendant-wa-link" href="https://wa.me/5511999999999" target="_blank" rel="noopener noreferrer"
-          class="shrink-0 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold text-xs px-3.5 py-2.5 rounded-xl shadow-sm flex items-center gap-1.5 transition">
-          <span>💬</span>
-          <span>Falar com Atendente</span>
-        </a>
-      </div>
-
       <div id="google-review-card" class="pt-2.5 border-t border-gray-100 flex items-center justify-between gap-2">
         <div>
           <p class="text-xs font-bold text-gray-800">Já comprou com a gente?</p>
           <p class="text-[11px] text-gray-500">Sua avaliação no Google ajuda muito!</p>
         </div>
-        <a id="google-review-link" href="https://google.com" target="_blank" rel="noopener noreferrer"
+        <a id="google-review-link" href="https://g.page/r/" target="_blank" rel="noopener noreferrer"
           class="shrink-0 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 font-bold text-xs px-3 py-2 rounded-xl transition">
           ⭐ Avaliar
         </a>
@@ -330,6 +320,13 @@
     </section>
 
   </main>
+
+  <!-- Botão Flutuante WhatsApp Atendente -->
+  <button type="button" onclick="openSupportWhatsApp()" title="Falar com atendente no WhatsApp"
+    class="fixed bottom-20 right-4 z-30 bg-[#25D366] hover:bg-[#1ebe5d] active:scale-95 text-white font-bold text-xs px-3.5 py-2.5 rounded-full shadow-lg shadow-emerald-900/25 flex items-center gap-2 transition">
+    <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.274.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.045.072.045.419-.1.824z"/></svg>
+    <span>Atendente</span>
+  </button>
 
   <!-- Sticky Footer Checkout -->
   <div class="fixed bottom-0 inset-x-0 bg-white border-t border-gray-200 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] z-30">
@@ -369,33 +366,6 @@
     </div>
   </div>
 
-  <!-- Customer Purchase History Modal -->
-  <div id="customer-history-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl max-w-md w-full p-5 shadow-2xl space-y-3">
-      <div class="flex items-start justify-between gap-2 border-b border-gray-100 pb-3">
-        <div>
-          <h3 class="font-extrabold text-gray-900 text-base">📜 Últimas Compras</h3>
-          <p id="history-modal-customer-name" class="text-xs font-bold text-orange-600 mt-0.5">Cliente</p>
-          <p id="history-modal-customer-phone" class="text-[11px] text-gray-500"></p>
-        </div>
-        <button type="button" onclick="closeCustomerHistoryModal()" class="text-gray-400 hover:text-gray-600 font-bold text-lg px-1">✕</button>
-      </div>
-
-      <div id="history-modal-summary" class="bg-emerald-50 border border-emerald-200 rounded-xl p-2.5 flex items-center justify-between text-xs">
-        <span class="font-bold text-emerald-900">Pedidos registrados: <strong id="history-modal-count">0</strong></span>
-        <span class="font-extrabold text-emerald-800">Total gasto: <strong id="history-modal-total">R$ 0,00</strong></span>
-      </div>
-
-      <div id="history-modal-list" class="space-y-2.5 max-h-72 overflow-y-auto pr-1">
-        <!-- Populated by JS -->
-      </div>
-
-      <button type="button" onclick="closeCustomerHistoryModal()" class="w-full bg-gray-900 hover:bg-gray-800 text-white font-bold py-2.5 rounded-xl text-xs transition">
-        Fechar Histórico
-      </button>
-    </div>
-  </div>
-
   <!-- Admin Panel Modal -->
   <div id="admin-modal" class="hidden fixed inset-0 bg-gray-900/80 backdrop-blur-sm z-50 overflow-y-auto">
     <div class="min-h-screen flex items-start justify-center p-2 sm:p-4">
@@ -403,7 +373,7 @@
         <!-- Admin Header -->
         <div class="bg-gray-900 text-white px-5 py-4 flex items-center justify-between">
           <div>
-            <h2 class="font-extrabold text-base">⚙️ Painel do Balcão • Gestão Completa</h2>
+            <h2 class="font-extrabold text-base">⚙️ Painel do Balcão • Gestão em Nuvem</h2>
             <p class="text-xs text-gray-400">Pedidos ao vivo, preços, cupons, horários e clientes</p>
           </div>
           <button onclick="closeAdminModal()" class="bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-lg text-xs font-bold">
@@ -480,7 +450,7 @@
 
           <button type="button" id="btn-save-prices" onclick="savePricesAndSettings()"
             class="w-full bg-orange-600 hover:bg-orange-700 active:scale-[0.99] text-white font-bold py-3 rounded-xl text-sm shadow-md transition">
-            💾 Salvar Alterações
+            💾 Salvar e Sincronizar na Nuvem
           </button>
         </div>
 
@@ -507,12 +477,12 @@
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
               <div>
                 <label class="block text-[10px] font-bold text-gray-600 mb-0.5">Código do Cupom</label>
-                <input type="text" id="new-coupon-code" placeholder="Ex: DEMO10"
+                <input type="text" id="new-coupon-code" placeholder="Ex: NOVZAP4"
                   class="w-full px-2.5 py-2 bg-white border border-gray-200 rounded-lg text-xs font-extrabold uppercase" />
               </div>
               <div>
                 <label class="block text-[10px] font-bold text-gray-600 mb-0.5">Valor do Desconto (R$)</label>
-                <input type="number" step="0.50" id="new-coupon-discount" placeholder="Ex: 10.00"
+                <input type="number" step="0.50" id="new-coupon-discount" placeholder="Ex: 4.00"
                   class="w-full px-2.5 py-2 bg-white border border-gray-200 rounded-lg text-xs font-extrabold" />
               </div>
               <div>
@@ -605,9 +575,9 @@
           <div id="import-excel-box" class="hidden bg-emerald-50/80 border border-emerald-200 rounded-xl p-3.5 space-y-3">
             <div class="flex items-start justify-between gap-2">
               <div>
-                <p class="text-xs font-extrabold text-emerald-950">📊 Importar Planilha Excel de Clientes</p>
+                <p class="text-xs font-extrabold text-emerald-950">📊 Importar Planilha Excel para Nuvem</p>
                 <p class="text-[11px] text-emerald-800 mt-0.5">
-                  Importa a base de clientes para preenchimento automático pelo telefone.
+                  Sincroniza os clientes com o Firebase para busca automática em qualquer celular.
                 </p>
               </div>
               <button type="button" onclick="toggleBox('import-excel-box')" class="text-xs text-emerald-700 font-bold">✕</button>
@@ -641,12 +611,11 @@
             <input type="hidden" id="edit-c-id" value="" />
             <div class="grid grid-cols-2 gap-2">
               <input type="text" id="new-c-name" placeholder="Nome / Comércio" class="px-2.5 py-1.5 bg-white border border-gray-200 rounded-lg text-xs font-medium" />
-              <input type="tel" id="new-c-phone" placeholder="Telefone(s) (11999999999)" class="px-2.5 py-1.5 bg-white border border-gray-200 rounded-lg text-xs font-medium" />
-              <input type="text" id="new-c-street" placeholder="Rua / Avenida" class="px-2.5 py-1.5 bg-white border border-gray-200 rounded-lg text-xs font-medium" />
-              <input type="text" id="new-c-number" placeholder="Número" class="px-2.5 py-1.5 bg-white border border-gray-200 rounded-lg text-xs font-medium" />
+              <input type="tel" id="new-c-phone" placeholder="Telefone(s) (19999999999)" class="px-2.5 py-1.5 bg-white border border-gray-200 rounded-lg text-xs font-medium" />
+              <input type="text" id="new-c-street" placeholder="Rua e Número" class="px-2.5 py-1.5 bg-white border border-gray-200 rounded-lg text-xs font-medium" />
               <input type="text" id="new-c-complement" placeholder="Complemento (opc.)" class="px-2.5 py-1.5 bg-white border border-gray-200 rounded-lg text-xs font-medium" />
               <input type="text" id="new-c-neighborhood" placeholder="Bairro" class="px-2.5 py-1.5 bg-white border border-gray-200 rounded-lg text-xs font-medium" />
-              <input type="text" id="new-c-ref" placeholder="Cidade / Ref." class="col-span-2 px-2.5 py-1.5 bg-white border border-gray-200 rounded-lg text-xs font-medium" />
+              <input type="text" id="new-c-ref" placeholder="Cidade / Ref." class="px-2.5 py-1.5 bg-white border border-gray-200 rounded-lg text-xs font-medium" />
             </div>
 
             <div class="bg-white border border-orange-200 rounded-lg p-2.5 space-y-1.5">
@@ -712,9 +681,78 @@
     </div>
   </div>
 
+  <!-- Modal Relatório de Vendas & Edição do Cliente -->
+  <div id="customer-report-modal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-[60] overflow-y-auto p-3 sm:p-5">
+    <div class="bg-white rounded-2xl max-w-lg w-full mx-auto shadow-2xl overflow-hidden my-4">
+      <div class="bg-gray-900 text-white px-4 py-3.5 flex items-center justify-between gap-2">
+        <div class="overflow-hidden">
+          <h3 id="rep-cust-name" class="font-extrabold text-sm truncate">Ficha do Cliente</h3>
+          <p id="rep-cust-phone" class="text-[11px] text-gray-300 truncate"></p>
+        </div>
+        <div class="flex items-center gap-1.5 shrink-0">
+          <button type="button" id="rep-edit-btn" class="bg-orange-600 hover:bg-orange-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition">
+            ✏️ Editar Dados
+          </button>
+          <button type="button" onclick="closeCustomerReport()" class="bg-white/10 hover:bg-white/20 text-white text-xs font-bold px-2.5 py-1.5 rounded-lg">
+            ✕
+          </button>
+        </div>
+      </div>
+
+      <div class="p-4 space-y-3.5">
+        <!-- Resumo Endereço e Tabela -->
+        <div class="bg-gray-50 border border-gray-200 rounded-xl p-3 text-xs space-y-1">
+          <p id="rep-cust-address" class="text-gray-700 font-medium"></p>
+          <div id="rep-cust-specials" class="flex flex-wrap gap-1.5 pt-1"></div>
+        </div>
+
+        <!-- KPIs de Vendas -->
+        <div class="grid grid-cols-3 gap-2 text-center">
+          <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-2.5">
+            <p class="text-[10px] font-bold text-emerald-800 uppercase">Total Comprado</p>
+            <p id="rep-total-spent" class="text-sm font-extrabold text-emerald-950 mt-0.5">R$ 0,00</p>
+          </div>
+          <div class="bg-blue-50 border border-blue-200 rounded-xl p-2.5">
+            <p class="text-[10px] font-bold text-blue-800 uppercase">Pedidos</p>
+            <p id="rep-orders-qty" class="text-sm font-extrabold text-blue-950 mt-0.5">0</p>
+          </div>
+          <div class="bg-orange-50 border border-orange-200 rounded-xl p-2.5">
+            <p class="text-[10px] font-bold text-orange-800 uppercase">Última Compra</p>
+            <p id="rep-last-date" class="text-xs font-extrabold text-orange-950 mt-1">-</p>
+          </div>
+        </div>
+
+        <!-- Lista de Vendas e Preços Pagos -->
+        <div>
+          <h4 class="text-xs font-extrabold text-gray-800 uppercase tracking-wider mb-2">🧾 Histórico de Vendas e Preços Pagos</h4>
+          <div id="rep-sales-list" class="space-y-2 max-h-64 overflow-y-auto pr-1">
+            <!-- Preenchido via JS -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
-    // ================= MODO DEMONSTRAÇÃO (SEM DADOS REAIS DE CLIENTES) =================
-    const cloudDb = null;
+    // ================= CONFIGURAÇÃO FIREBASE DO PROJETO =================
+    const firebaseConfig = {
+      apiKey: "AIzaSyCT_8NWaSHwkvxTNeTqplwsiLK-COvx4uQ",
+      authDomain: "telegas-sao-domingos.firebaseapp.com",
+      projectId: "telegas-sao-domingos",
+      storageBucket: "telegas-sao-domingos.firebasestorage.app",
+      messagingSenderId: "1027651440009",
+      appId: "1:1027651440009:web:c2fc0ecdc22b0d7e46a558"
+    };
+
+    let cloudDb = null;
+    try {
+      if (typeof firebase !== "undefined") {
+        firebase.initializeApp(firebaseConfig);
+        cloudDb = firebase.firestore();
+      }
+    } catch (e) {
+      console.warn("Modo offline local:", e);
+    }
 
     const memoryStorage = {};
     const safeStorage = {
@@ -733,18 +771,23 @@
       }
     };
 
+    // IndexedDB local como cache rápido
     const CustomersDB = {
-      dbName: "ChamaRapidaDemoDB_v1",
+      dbName: "TelegasCustomersDB_v3",
       storeName: "customers",
+      configStore: "app_config",
       db: null,
       async init() {
         return new Promise((resolve) => {
           try {
-            const req = indexedDB.open(this.dbName, 1);
+            const req = indexedDB.open(this.dbName, 3);
             req.onupgradeneeded = (e) => {
               const db = e.target.result;
               if (!db.objectStoreNames.contains(this.storeName)) {
                 db.createObjectStore(this.storeName, { keyPath: "id" });
+              }
+              if (!db.objectStoreNames.contains(this.configStore)) {
+                db.createObjectStore(this.configStore, { keyPath: "id" });
               }
             };
             req.onsuccess = (e) => {
@@ -815,11 +858,11 @@
 
     const defaultData = {
       settings: {
-        storeName: "Chama Rápida Gás",
-        storeAddress: "Avenida Brasil, 1000 - Centro, Sua Cidade - SP",
-        whatsapp: "5511999999999",
-        pixKey: "00.000.000/0001-00",
-        googleReviewUrl: "https://google.com",
+        storeName: "Telegás São Domingos",
+        storeAddress: "Avenida São Jerônimo, 1459 - São Domingos, Americana - SP",
+        whatsapp: "5519994604562",
+        pixKey: "19994604562",
+        googleReviewUrl: "https://g.page/r/",
         statusMode: "auto",
         pin: "1234"
       },
@@ -834,10 +877,10 @@
       },
       coupons: [
         {
-          id: "cp_demo10",
-          code: "DEMO10",
-          discount: 10.00,
-          desc: "Cupom promocional de demonstração",
+          id: "cp_novzap4",
+          code: "NOVZAP4",
+          discount: 4.00,
+          desc: "Cupom promocional do mês",
           active: true
         }
       ],
@@ -893,59 +936,12 @@
           qty: 0
         }
       ],
-      customers: [
-        {
-          id: "demo_c1",
-          phone: "11988887777",
-          phones: ["11988887777"],
-          name: "Padaria Pão Quente (Exemplo)",
-          street: "Rua das Acácias",
-          number: "450",
-          complement: "Loja 1",
-          neighborhood: "Jardim América",
-          ref: "Sua Cidade - SP",
-          group: "COMERCIO",
-          specialPrice: 120.00,
-          specialPrices: { p13: 120.00, p20: null, p45: 440.00 },
-          lastOrder: "15/11/2026",
-          totalOrders: 12
-        },
-        {
-          id: "demo_c2",
-          phone: "11977776666",
-          phones: ["11977776666"],
-          name: "Carlos Eduardo Silva (Exemplo)",
-          street: "Avenida Paulista",
-          number: "210",
-          complement: "Apto 42",
-          neighborhood: "Bela Vista",
-          ref: "Sua Cidade - SP",
-          group: "***GERAL***",
-          specialPrice: null,
-          specialPrices: { p13: null, p20: null, p45: null },
-          lastOrder: "10/11/2026",
-          totalOrders: 3
-        }
-      ],
-      orders: [
-        {
-          docId: "ord_demo_1",
-          id: "#1042",
-          date: "Hoje 09:15",
-          createdAt: Date.now(),
-          customerName: "Padaria Pão Quente (Exemplo)",
-          phone: "11988887777",
-          address: "Rua das Acácias, nº 450 (Loja 1) - Jardim América",
-          items: "1x Cilindro Gás P45",
-          total: 440.00,
-          payment: "Pix",
-          status: "confirmed"
-        }
-      ]
+      customers: [],
+      orders: []
     };
 
-    const CONFIG_STORAGE_KEY = "chamarapida_demo_cfg_v1";
-    const ACTIVE_ORDER_KEY = "chamarapida_demo_active_order_id";
+    const CONFIG_STORAGE_KEY = "telegas_persistent_cfg_v9";
+    const ACTIVE_ORDER_KEY = "telegas_active_order_id";
     let appState = loadConfigFromLocalStorage();
     let customersMap = new Map();
     let activeCustomerSpecialPrices = { p13: null, p20: null, p45: null };
@@ -953,13 +949,14 @@
     let crmFilterMode = "all";
     let crmCurrentPage = 1;
     const CRM_PAGE_SIZE = 30;
+    let activeOrderUnsubscribe = null;
 
     function mergeProducts(savedProducts) {
       if (!Array.isArray(savedProducts) || savedProducts.length === 0) {
         return JSON.parse(JSON.stringify(defaultData.products));
       }
       const savedMap = new Map(savedProducts.map(p => [p.id, p]));
-      return defaultData.products.map(defP => {
+      const merged = defaultData.products.map(defP => {
         const sp = savedMap.get(defP.id);
         if (sp) {
           const currentLocal = appState?.products?.find(x => x.id === defP.id);
@@ -972,6 +969,7 @@
         }
         return { ...defP };
       });
+      return merged;
     }
 
     function loadConfigFromLocalStorage() {
@@ -984,8 +982,8 @@
             schedule: { ...defaultData.schedule, ...parsed.schedule },
             coupons: Array.isArray(parsed.coupons) ? parsed.coupons : JSON.parse(JSON.stringify(defaultData.coupons)),
             products: mergeProducts(parsed.products),
-            customers: JSON.parse(JSON.stringify(defaultData.customers)),
-            orders: parsed.orders || JSON.parse(JSON.stringify(defaultData.orders))
+            customers: [],
+            orders: parsed.orders || []
           };
         } catch (e) {}
       }
@@ -999,10 +997,106 @@
         coupons: appState.coupons,
         products: appState.products.map(({ id, name, desc, price, icon, badge, active }) => ({
           id, name, desc, price, icon, badge, active
-        })),
-        orders: appState.orders
+        }))
       };
-      safeStorage.setItem(CONFIG_STORAGE_KEY, JSON.stringify(toSave));
+      safeStorage.setItem(CONFIG_STORAGE_KEY, JSON.stringify({ ...toSave, orders: appState.orders }));
+
+      if (cloudDb) {
+        try {
+          await cloudDb.collection("config").doc("main").set(toSave, { merge: true });
+        } catch (e) {
+          console.error("Erro ao sincronizar config na nuvem:", e);
+        }
+      }
+    }
+
+    // ================= SINCRONIZAÇÃO EM NUVEM (CLIENTES, CONFIG E PEDIDOS) =================
+    async function syncCustomerToCloud(custObj) {
+      if (!cloudDb) return;
+      try {
+        const batch = cloudDb.batch();
+        const phones = custObj.phones || [custObj.phone];
+        for (const p of phones) {
+          if (p && p.length >= 8) {
+            batch.set(cloudDb.collection("customers").doc(p), custObj);
+            if (p.length === 11) {
+              batch.set(cloudDb.collection("customers").doc(p.slice(0, 2) + p.slice(3)), custObj);
+            } else if (p.length === 10) {
+              batch.set(cloudDb.collection("customers").doc(p.slice(0, 2) + "9" + p.slice(2)), custObj);
+            }
+          }
+        }
+        await batch.commit();
+      } catch (e) {
+        console.error("Erro ao salvar cliente na nuvem:", e);
+      }
+    }
+
+    async function lookupCustomerInCloud(cleanDigits) {
+      if (!cloudDb || cleanDigits.length < 10) return null;
+      try {
+        const doc = await cloudDb.collection("customers").doc(cleanDigits).get();
+        if (doc.exists) return doc.data();
+      } catch (e) {}
+      return null;
+    }
+
+    function setupCloudListeners() {
+      if (!cloudDb) return;
+
+      // 1. Escuta configurações globais (preços, horários, cupons) em tempo real
+      cloudDb.collection("config").doc("main").onSnapshot((doc) => {
+        if (doc.exists) {
+          const data = doc.data();
+          if (data.settings) appState.settings = { ...appState.settings, ...data.settings };
+          if (data.schedule) appState.schedule = { ...appState.schedule, ...data.schedule };
+          if (Array.isArray(data.coupons)) appState.coupons = data.coupons;
+          if (Array.isArray(data.products)) appState.products = mergeProducts(data.products);
+
+          safeStorage.setItem(CONFIG_STORAGE_KEY, JSON.stringify({
+            settings: appState.settings,
+            schedule: appState.schedule,
+            coupons: appState.coupons,
+            products: appState.products,
+            orders: appState.orders
+          }));
+
+          renderProducts();
+          updateStoreUI();
+          handleCouponInput();
+        }
+        document.getElementById("cloud-sync-badge").classList.remove("hidden");
+      }, (err) => {
+        console.warn("Aguardando ativação do Firestore:", err.message);
+      });
+
+      // 2. Escuta pedidos em tempo real para o Painel do Balcão
+      cloudDb.collection("orders").orderBy("createdAt", "desc").limit(60).onSnapshot((snap) => {
+        const cloudOrders = [];
+        snap.forEach(doc => cloudOrders.push({ docId: doc.id, ...doc.data() }));
+        if (cloudOrders.length > 0) {
+          appState.orders = cloudOrders;
+          renderOrdersHistory();
+        }
+      });
+
+      // 3. Reconecta acompanhamento se cliente já tinha pedido ativo nesta sessão
+      const savedActiveOrderId = safeStorage.getItem(ACTIVE_ORDER_KEY);
+      if (savedActiveOrderId) {
+        watchCustomerOrderStatus(savedActiveOrderId);
+      }
+    }
+
+    // ================= RASTREIO EM TEMPO REAL NA TELA DO CLIENTE =================
+    function watchCustomerOrderStatus(orderDocId) {
+      if (!cloudDb || !orderDocId) return;
+      if (activeOrderUnsubscribe) activeOrderUnsubscribe();
+
+      activeOrderUnsubscribe = cloudDb.collection("orders").doc(orderDocId).onSnapshot((doc) => {
+        if (!doc.exists) return;
+        const order = doc.data();
+        renderLiveTrackerUI(order);
+      });
     }
 
     function renderLiveTrackerUI(order) {
@@ -1034,7 +1128,7 @@
         title.className = "text-xs font-extrabold text-amber-950";
         title.textContent = "Pedido enviado! Aguardando confirmação da loja...";
         sub.className = "text-[11px] text-amber-800 mt-0.5";
-        sub.textContent = "Abra o botão ⚙️ Balcão no topo e mude o status para testar!";
+        sub.textContent = "Assim que o balcão confirmar, esta tela atualiza sozinha.";
       } else if (status === "confirmed") {
         banner.className = "bg-blue-50 border border-blue-200 rounded-xl p-3 flex items-center gap-3";
         icon.textContent = "✅";
@@ -1062,6 +1156,10 @@
     function dismissLiveTracker() {
       document.getElementById("live-order-tracker").classList.add("hidden");
       safeStorage.setItem(ACTIVE_ORDER_KEY, "");
+      if (activeOrderUnsubscribe) {
+        activeOrderUnsubscribe();
+        activeOrderUnsubscribe = null;
+      }
     }
 
     function normalizeCustomerSpecialPrices(c) {
@@ -1105,9 +1203,9 @@
     }
 
     async function initApp() {
-      rebuildCustomersMap();
       renderProducts();
       updateStoreUI();
+      setupCloudListeners();
 
       const ok = await CustomersDB.init();
       if (ok) {
@@ -1115,8 +1213,6 @@
         if (savedCustomers && savedCustomers.length > 0) {
           appState.customers = savedCustomers;
           rebuildCustomersMap();
-        } else {
-          await CustomersDB.bulkSave(appState.customers, true);
         }
       }
     }
@@ -1215,7 +1311,13 @@
         return;
       }
 
-      const found = customersMap.get(clean);
+      let found = customersMap.get(clean);
+      if (!found && clean.length >= 10) {
+        found = await lookupCustomerInCloud(clean);
+        if (found) {
+          indexSinglePhone(clean, found);
+        }
+      }
       applyFoundCustomerToForm(found || null);
     }
 
@@ -1372,14 +1474,9 @@
     function updateStoreUI() {
       document.getElementById("store-name-display").textContent = appState.settings.storeName;
       document.getElementById("pix-key-display").textContent = appState.settings.pixKey;
-      document.getElementById("google-review-link").href = appState.settings.googleReviewUrl || "https://google.com";
+      document.getElementById("google-review-link").href = appState.settings.googleReviewUrl || "https://g.page/r/";
 
-      const waClean = String(appState.settings.whatsapp || "5511999999999").replace(/\D/g, "");
-      const waWithCountry = waClean.startsWith("55") ? waClean : `55${waClean}`;
-      const attendantMsg = encodeURIComponent(`Olá! Vim pelo site da ${appState.settings.storeName} 🔥 e gostaria de falar com um atendente.`);
-      document.getElementById("attendant-wa-link").href = `https://wa.me/${waWithCountry}?text=${attendantMsg}`;
-
-      const addr = appState.settings.storeAddress || "Avenida Brasil, 1000 - Centro, Sua Cidade - SP";
+      const addr = appState.settings.storeAddress || "Avenida São Jerônimo, 1459 - São Domingos, Americana - SP";
       document.getElementById("store-address-display").textContent = addr;
       document.getElementById("store-gps-link").href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr)}`;
 
@@ -1514,11 +1611,11 @@
           }
           rebuildCustomersMap();
           await CustomersDB.bulkSave([custObj]);
+          await syncCustomerToCloud(custObj);
         }
 
         const orderDocId = `ord_${Date.now()}`;
         const newOrderObj = {
-          docId: orderDocId,
           id: orderDisplayCode,
           date: `${dateStr} ${timeStr}`,
           createdAt: Date.now(),
@@ -1531,10 +1628,18 @@
           status: "sent"
         };
 
-        appState.orders.unshift(newOrderObj);
-        await persistConfigState();
+        appState.orders.unshift({ docId: orderDocId, ...newOrderObj });
         safeStorage.setItem(ACTIVE_ORDER_KEY, orderDocId);
         renderLiveTrackerUI(newOrderObj);
+
+        if (cloudDb) {
+          try {
+            await cloudDb.collection("orders").doc(orderDocId).set(newOrderObj);
+            watchCustomerOrderStatus(orderDocId);
+          } catch (e) {
+            console.error("Erro ao gravar pedido no Firebase:", e);
+          }
+        }
       }
 
       let couponLine = "";
@@ -1567,6 +1672,15 @@
       const waNumber = appState.settings.whatsapp.replace(/\D/g, "");
       const url = `https://wa.me/${waNumber}?text=${encodeURIComponent(msg)}`;
       window.open(url, "_blank");
+    }
+
+    function openSupportWhatsApp() {
+      const waNumber = appState.settings.whatsapp.replace(/\D/g, "");
+      const custName = document.getElementById("cust-name")?.value.trim();
+      const text = custName
+        ? `Olá! Aqui é ${custName}, vim pelo site da ${appState.settings.storeName} e gostaria de falar com um atendente.`
+        : `Olá! Vim pelo site da ${appState.settings.storeName} e gostaria de falar com um atendente.`;
+      window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(text)}`, "_blank");
     }
 
     // ================= ADMIN MODAL =================
@@ -1625,7 +1739,7 @@
       document.getElementById("cfg-whatsapp").value = appState.settings.whatsapp;
       document.getElementById("cfg-pix").value = appState.settings.pixKey;
       document.getElementById("cfg-google-link").value = appState.settings.googleReviewUrl || "";
-      document.getElementById("cfg-store-address").value = appState.settings.storeAddress || "Avenida Brasil, 1000 - Centro, Sua Cidade - SP";
+      document.getElementById("cfg-store-address").value = appState.settings.storeAddress || "Avenida São Jerônimo, 1459 - São Domingos, Americana - SP";
       document.getElementById("cfg-status-mode").value = appState.settings.statusMode;
 
       updateDefaultPriceHints();
@@ -1677,12 +1791,14 @@
       const target = appState.orders.find(o => o.docId === docId);
       if (target) {
         target.status = newStatus;
-        await persistConfigState();
         renderOrdersHistory();
+      }
 
-        const activeId = safeStorage.getItem(ACTIVE_ORDER_KEY);
-        if (activeId === docId) {
-          renderLiveTrackerUI(target);
+      if (cloudDb && docId) {
+        try {
+          await cloudDb.collection("orders").doc(docId).update({ status: newStatus });
+        } catch (e) {
+          console.error("Erro ao atualizar status na nuvem:", e);
         }
       }
 
@@ -1821,7 +1937,7 @@
       document.getElementById("coupon-form-box").classList.add("hidden");
       renderAdminCoupons();
       handleCouponInput();
-      showToast(`Cupom ${code} salvo!`, "🎟️");
+      showToast(`Cupom ${code} sincronizado na nuvem!`, "🎟️");
     }
 
     async function toggleCouponActive(id) {
@@ -1901,11 +2017,11 @@
     }
 
     async function savePricesAndSettings() {
-      appState.settings.storeName = document.getElementById("cfg-store-name").value.trim() || "Chama Rápida Gás";
-      appState.settings.whatsapp = document.getElementById("cfg-whatsapp").value.trim() || "5511999999999";
-      appState.settings.pixKey = document.getElementById("cfg-pix").value.trim() || "00.000.000/0001-00";
-      appState.settings.googleReviewUrl = document.getElementById("cfg-google-link").value.trim() || "https://google.com";
-      appState.settings.storeAddress = document.getElementById("cfg-store-address").value.trim() || "Avenida Brasil, 1000 - Centro, Sua Cidade - SP";
+      appState.settings.storeName = document.getElementById("cfg-store-name").value.trim() || "Telegás São Domingos";
+      appState.settings.whatsapp = document.getElementById("cfg-whatsapp").value.trim() || "5519994604562";
+      appState.settings.pixKey = document.getElementById("cfg-pix").value.trim() || "19994604562";
+      appState.settings.googleReviewUrl = document.getElementById("cfg-google-link").value.trim() || "https://g.page/r/";
+      appState.settings.storeAddress = document.getElementById("cfg-store-address").value.trim() || "Avenida São Jerônimo, 1459 - São Domingos, Americana - SP";
 
       appState.products.forEach((p, i) => {
         p.active = document.getElementById(`cfg-active-${i}`).checked;
@@ -1920,8 +2036,8 @@
       renderProducts();
       updateStoreUI();
       renderCRMTable();
-      flashButtonSuccess("btn-save-prices", "✅ Alterações Salvas!", "💾 Salvar Alterações");
-      showToast("Preços e configurações salvos!", "✅");
+      flashButtonSuccess("btn-save-prices", "✅ Sincronizado na Nuvem!", "💾 Salvar e Sincronizar na Nuvem");
+      showToast("Preços e configurações salvos na nuvem!", "✅");
     }
 
     async function saveHoursSettings() {
@@ -1940,7 +2056,7 @@
       showToast("Horários de funcionamento salvos!", "⏰");
     }
 
-    // ================= IMPORTADOR EXCEL LOCAL =================
+    // ================= IMPORTADOR EXCEL + SINCRONIZAÇÃO NUVEM =================
     function getColValue(row, targetNames) {
       const keys = Object.keys(row);
       for (const k of keys) {
@@ -1976,15 +2092,15 @@
 
       progressBox.classList.remove("hidden");
       progressLabel.textContent = "Lendo arquivo Excel...";
-      progressPct.textContent = "25%";
-      progressBar.style.width = "25%";
+      progressPct.textContent = "20%";
+      progressBar.style.width = "20%";
 
       const reader = new FileReader();
       reader.onload = async function (e) {
         try {
           progressLabel.textContent = "Processando clientes...";
-          progressPct.textContent = "60%";
-          progressBar.style.width = "60%";
+          progressPct.textContent = "50%";
+          progressBar.style.width = "50%";
 
           await new Promise(r => setTimeout(r, 30));
 
@@ -2079,17 +2195,40 @@
             return;
           }
 
+          progressLabel.textContent = `Salvando ${importedList.length.toLocaleString("pt-BR")} clientes...`;
+          progressPct.textContent = "75%";
+          progressBar.style.width = "75%";
+
           appState.customers = importedList;
           rebuildCustomersMap();
           await CustomersDB.bulkSave(importedList, true);
 
+          // Envia para o Firebase em lotes de 400 registros
+          if (cloudDb) {
+            progressLabel.textContent = "Enviando para a nuvem (Firebase)...";
+            const CHUNK = 400;
+            for (let i = 0; i < importedList.length; i += CHUNK) {
+              const slice = importedList.slice(i, i + CHUNK);
+              const batch = cloudDb.batch();
+              for (const c of slice) {
+                if (c.phone && c.phone.length >= 8) {
+                  batch.set(cloudDb.collection("customers").doc(c.phone), c);
+                }
+              }
+              await batch.commit();
+              const pct = Math.min(99, Math.round(75 + ((i + slice.length) / importedList.length) * 24));
+              progressPct.textContent = `${pct}%`;
+              progressBar.style.width = `${pct}%`;
+            }
+          }
+
           progressPct.textContent = "100%";
           progressBar.style.width = "100%";
-          progressLabel.textContent = `Concluído! ${importedList.length.toLocaleString("pt-BR")} clientes carregados.`;
+          progressLabel.textContent = `Concluído! ${importedList.length.toLocaleString("pt-BR")} clientes na nuvem.`;
 
           crmCurrentPage = 1;
           renderCRMTable();
-          showToast(`${importedList.length.toLocaleString("pt-BR")} clientes importados!`, "🎉");
+          showToast(`${importedList.length.toLocaleString("pt-BR")} clientes sincronizados!`, "🎉");
 
           setTimeout(() => {
             progressBox.classList.add("hidden");
@@ -2097,7 +2236,7 @@
           }, 2200);
         } catch (err) {
           console.error(err);
-          showToast("Erro ao ler o arquivo Excel.", "❌");
+          showToast("Erro ao ler ou enviar o arquivo Excel.", "❌");
           progressBox.classList.add("hidden");
         }
       };
@@ -2111,7 +2250,7 @@
       await CustomersDB.clearAll();
       crmCurrentPage = 1;
       renderCRMTable();
-      showToast("Lista de clientes limpa.", "🗑️");
+      showToast("Lista local de clientes limpa.", "🗑️");
     }
 
     function openNewCustomerForm() {
@@ -2120,7 +2259,6 @@
       document.getElementById("new-c-name").value = "";
       document.getElementById("new-c-phone").value = "";
       document.getElementById("new-c-street").value = "";
-      document.getElementById("new-c-number").value = "";
       document.getElementById("new-c-complement").value = "";
       document.getElementById("new-c-neighborhood").value = "";
       document.getElementById("new-c-ref").value = "";
@@ -2140,7 +2278,6 @@
       document.getElementById("new-c-name").value = c.name || "";
       document.getElementById("new-c-phone").value = (c.phones || [c.phone]).join("; ");
       document.getElementById("new-c-street").value = c.street || "";
-      document.getElementById("new-c-number").value = c.number || "";
       document.getElementById("new-c-complement").value = c.complement || "";
       document.getElementById("new-c-neighborhood").value = c.neighborhood || "";
       document.getElementById("new-c-ref").value = c.ref || "";
@@ -2157,7 +2294,6 @@
       const name = document.getElementById("new-c-name").value.trim();
       const phones = extractAllPhones(document.getElementById("new-c-phone").value);
       const street = document.getElementById("new-c-street").value.trim();
-      const number = document.getElementById("new-c-number").value.trim();
       const complement = document.getElementById("new-c-complement").value.trim();
       const neighborhood = document.getElementById("new-c-neighborhood").value.trim();
       const ref = document.getElementById("new-c-ref").value.trim();
@@ -2189,7 +2325,7 @@
         phones: phones,
         name,
         street,
-        number,
+        number: existing ? (existing.number || "") : "",
         complement,
         neighborhood,
         ref,
@@ -2209,6 +2345,7 @@
 
       rebuildCustomersMap();
       await CustomersDB.bulkSave([obj]);
+      await syncCustomerToCloud(obj);
 
       const currentTypedPhone = document.getElementById("cust-phone").value.replace(/\D/g, "");
       if (currentTypedPhone && phones.includes(currentTypedPhone)) {
@@ -2218,7 +2355,7 @@
 
       document.getElementById("new-customer-box").classList.add("hidden");
       renderCRMTable();
-      showToast((p13 || p20 || p45) ? "Cliente e tabela especial salvos!" : "Cliente salvo!", "✅");
+      showToast((p13 || p20 || p45) ? "Tabela especial salva na nuvem!" : "Cliente salvo na nuvem!", "✅");
     }
 
     async function deleteCustomer(id) {
@@ -2227,97 +2364,6 @@
       await CustomersDB.deleteOne(id);
       renderCRMTable();
       showToast("Cliente removido.", "🗑️");
-    }
-
-    // ================= HISTÓRICO DE COMPRAS DO CLIENTE =================
-    function normalizePhoneVariants(digits) {
-      const clean = String(digits || "").replace(/\D/g, "");
-      const variants = new Set();
-      if (!clean) return variants;
-      variants.add(clean);
-      if (clean.length === 11) {
-        variants.add(clean.slice(0, 2) + clean.slice(3));
-      } else if (clean.length === 10) {
-        variants.add(clean.slice(0, 2) + "9" + clean.slice(2));
-      }
-      return variants;
-    }
-
-    function getCustomerOrders(customer) {
-      const phoneSet = new Set();
-      const list = Array.isArray(customer.phones) && customer.phones.length > 0
-        ? customer.phones
-        : (customer.phone ? [customer.phone] : []);
-
-      list.forEach(p => {
-        normalizePhoneVariants(p).forEach(v => phoneSet.add(v));
-      });
-
-      const custNameNorm = (customer.name || "").trim().toLowerCase();
-
-      return (appState.orders || []).filter(o => {
-        const orderPhoneClean = String(o.phone || "").replace(/\D/g, "");
-        if (orderPhoneClean && phoneSet.has(orderPhoneClean)) return true;
-        if (!orderPhoneClean && custNameNorm && (o.customerName || "").trim().toLowerCase() === custNameNorm) {
-          return true;
-        }
-        return false;
-      });
-    }
-
-    function openCustomerHistory(id) {
-      const c = appState.customers.find(item => item.id === id);
-      if (!c) return;
-
-      const orders = getCustomerOrders(c);
-      const totalSpent = orders.reduce((acc, o) => acc + (Number(o.total) || 0), 0);
-
-      document.getElementById("history-modal-customer-name").textContent = c.name;
-      document.getElementById("history-modal-customer-phone").textContent = (c.phones || [c.phone]).map(formatPhoneMask).join(" • ");
-      document.getElementById("history-modal-count").textContent = orders.length;
-      document.getElementById("history-modal-total").textContent = formatBRL(totalSpent);
-
-      const statusLabels = {
-        sent: { text: "⏳ Aguardando", cls: "bg-amber-100 text-amber-800" },
-        confirmed: { text: "✅ Confirmado", cls: "bg-blue-100 text-blue-800" },
-        delivering: { text: "🛵 Em Entrega", cls: "bg-orange-100 text-orange-800" },
-        delivered: { text: "🎉 Entregue", cls: "bg-emerald-100 text-emerald-800" }
-      };
-
-      const container = document.getElementById("history-modal-list");
-      if (orders.length === 0) {
-        container.innerHTML = `
-          <div class="text-center py-6 bg-gray-50 rounded-xl border border-gray-200 space-y-1">
-            <p class="text-xs font-bold text-gray-600">Nenhuma compra registrada no histórico ainda.</p>
-            ${c.lastOrder ? `<p class="text-[11px] text-gray-400">Último registro cadastrado: ${c.lastOrder}</p>` : ""}
-          </div>
-        `;
-      } else {
-        container.innerHTML = orders.map(o => {
-          const st = statusLabels[o.status || "sent"] || statusLabels.sent;
-          return `
-            <div class="p-3 bg-gray-50 rounded-xl border border-gray-200 space-y-1.5">
-              <div class="flex items-center justify-between gap-2">
-                <span class="text-xs font-extrabold text-gray-900">${o.id} • <span class="font-medium text-gray-500">${o.date}</span></span>
-                <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full ${st.cls}">${st.text}</span>
-              </div>
-              <p class="text-xs font-semibold text-gray-800">${o.items}</p>
-              <div class="flex items-center justify-between pt-1 border-t border-gray-200/70">
-                <span class="text-[11px] text-gray-500">Pagamento: <strong>${o.payment}</strong></span>
-                <span class="text-xs font-extrabold text-emerald-700 bg-emerald-100/80 px-2 py-0.5 rounded">
-                  Pago: ${formatBRL(o.total)}
-                </span>
-              </div>
-            </div>
-          `;
-        }).join("");
-      }
-
-      document.getElementById("customer-history-modal").classList.remove("hidden");
-    }
-
-    function closeCustomerHistoryModal() {
-      document.getElementById("customer-history-modal").classList.add("hidden");
     }
 
     function setCRMFilter(mode) {
@@ -2355,6 +2401,89 @@
     function changeCRMPage(delta) {
       crmCurrentPage = Math.max(1, crmCurrentPage + delta);
       renderCRMTable();
+    }
+
+    // ================= RELATÓRIO DE VENDAS & PREÇOS PAGOS DO CLIENTE =================
+    async function openCustomerReport(id) {
+      const c = appState.customers.find(item => item.id === id);
+      if (!c) return;
+
+      document.getElementById("rep-cust-name").textContent = c.name || "Cliente";
+      const phonesList = (c.phones && c.phones.length ? c.phones : [c.phone]).filter(Boolean);
+      document.getElementById("rep-cust-phone").textContent = phonesList.map(formatPhoneMask).join(" • ") || "Sem telefone";
+      document.getElementById("rep-cust-address").textContent =
+        `📍 ${c.street || "-"}${c.number ? `, ${c.number}` : ""}${c.complement ? ` (${c.complement})` : ""} ${c.neighborhood ? `- ${c.neighborhood}` : ""} ${c.ref ? `• ${c.ref}` : ""}`;
+
+      const sp = normalizeCustomerSpecialPrices(c);
+      const specialsEl = document.getElementById("rep-cust-specials");
+      const badges = [];
+      if (isCustomerComercio(c)) badges.push(`<span class="text-[10px] font-extrabold bg-blue-100 text-blue-800 px-2 py-0.5 rounded">🏢 COMÉRCIO</span>`);
+      if (sp.p13) badges.push(`<span class="text-[10px] font-extrabold bg-orange-100 text-orange-800 px-2 py-0.5 rounded">P13: ${formatBRL(sp.p13)}</span>`);
+      if (sp.p20) badges.push(`<span class="text-[10px] font-extrabold bg-orange-100 text-orange-800 px-2 py-0.5 rounded">P20: ${formatBRL(sp.p20)}</span>`);
+      if (sp.p45) badges.push(`<span class="text-[10px] font-extrabold bg-orange-100 text-orange-800 px-2 py-0.5 rounded">P45: ${formatBRL(sp.p45)}</span>`);
+      specialsEl.innerHTML = badges.length ? badges.join("") : `<span class="text-[10px] text-gray-500">Tabela Padrão</span>`;
+
+      document.getElementById("rep-edit-btn").onclick = () => {
+        closeCustomerReport();
+        editCustomer(c.id);
+        document.getElementById("new-customer-box").scrollIntoView({ behavior: "smooth", block: "center" });
+      };
+
+      const salesContainer = document.getElementById("rep-sales-list");
+      salesContainer.innerHTML = `<p class="text-xs text-gray-400 text-center py-4">Buscando histórico de pedidos...</p>`;
+      document.getElementById("customer-report-modal").classList.remove("hidden");
+
+      const matchedOrdersMap = new Map();
+      const normalizedPhones = new Set(phonesList.map(p => p.replace(/\D/g, "")));
+
+      appState.orders.forEach(o => {
+        const op = String(o.phone || "").replace(/\D/g, "");
+        if (op && normalizedPhones.has(op)) {
+          matchedOrdersMap.set(o.docId || o.id, o);
+        }
+      });
+
+      if (cloudDb && normalizedPhones.size > 0) {
+        for (const ph of normalizedPhones) {
+          if (ph.length < 8) continue;
+          try {
+            const snap = await cloudDb.collection("orders").where("phone", "==", ph).get();
+            snap.forEach(doc => {
+              matchedOrdersMap.set(doc.id, { docId: doc.id, ...doc.data() });
+            });
+          } catch (e) {}
+        }
+      }
+
+      const customerOrders = Array.from(matchedOrdersMap.values())
+        .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+
+      const totalSpent = customerOrders.reduce((acc, o) => acc + (Number(o.total) || 0), 0);
+      document.getElementById("rep-total-spent").textContent = formatBRL(totalSpent);
+      document.getElementById("rep-orders-qty").textContent = customerOrders.length;
+      document.getElementById("rep-last-date").textContent = customerOrders[0]?.date?.split(" ")[0] || c.lastOrder || "-";
+
+      if (customerOrders.length === 0) {
+        salesContainer.innerHTML = `<p class="text-xs text-gray-400 text-center py-6 bg-gray-50 rounded-xl border border-gray-200">Nenhuma venda registrada pelo sistema para este cliente ainda.</p>`;
+        return;
+      }
+
+      salesContainer.innerHTML = customerOrders.map(o => `
+        <div class="p-3 bg-gray-50 border border-gray-200 rounded-xl space-y-1">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-extrabold text-gray-900">${o.id || "Pedido"} • <span class="font-normal text-gray-500">${o.date || ""}</span></span>
+            <span class="text-xs font-extrabold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-lg">
+              ${formatBRL(o.total || 0)}
+            </span>
+          </div>
+          <p class="text-xs font-semibold text-gray-800">${o.items || "-"}</p>
+          <p class="text-[11px] text-gray-500">Pagamento: <strong>${o.payment || "-"}</strong></p>
+        </div>
+      `).join("");
+    }
+
+    function closeCustomerReport() {
+      document.getElementById("customer-report-modal").classList.add("hidden");
     }
 
     function renderCRMTable() {
@@ -2411,47 +2540,44 @@
         if (sp.p20) badges.push(`P20: ${formatBRL(sp.p20)}`);
         if (sp.p45) badges.push(`P45: ${formatBRL(sp.p45)}`);
         const isComercio = isCustomerComercio(c);
-        const custOrders = getCustomerOrders(c);
 
         return `
-          <tr class="hover:bg-gray-50">
-            <td class="py-2.5 px-3">
+          <tr class="hover:bg-orange-50/50 transition">
+            <td onclick="openCustomerReport('${c.id}')" class="py-2.5 px-3 cursor-pointer">
               <div class="flex flex-wrap items-center gap-1">
-                <p class="font-bold text-gray-900">${c.name}</p>
+                <p class="font-bold text-gray-900 underline decoration-orange-300 hover:text-orange-700">${c.name}</p>
                 ${isComercio ? `<span class="text-[9px] font-extrabold bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded">COMÉRCIO</span>` : ""}
               </div>
               <p class="text-[11px] text-gray-500">${(c.phones || [c.phone]).map(formatPhoneMask).join(" • ")}</p>
             </td>
-            <td class="py-2.5 px-3 text-[11px] text-gray-700">
+            <td onclick="openCustomerReport('${c.id}')" class="py-2.5 px-3 text-[11px] text-gray-700 cursor-pointer">
               ${c.street || "-"}${c.number ? `, ${c.number}` : ""}${c.complement ? ` (${c.complement})` : ""}<br/>
               <span class="text-gray-400">${c.neighborhood || ""} ${c.ref ? `• ${c.ref}` : ""}</span>
             </td>
-            <td class="py-2.5 px-3">
+            <td onclick="openCustomerReport('${c.id}')" class="py-2.5 px-3 cursor-pointer">
               ${badges.length > 0
                 ? `<div class="flex flex-col gap-1">${badges.map(b => `<span class="inline-block bg-orange-100 text-orange-800 border border-orange-300 font-extrabold px-2 py-0.5 rounded text-[10px] whitespace-nowrap">${b}</span>`).join("")}</div>`
                 : `<span class="inline-block bg-gray-100 text-gray-600 font-semibold px-2 py-0.5 rounded text-[10px]">Tabela Padrão</span>`
               }
             </td>
-            <td class="py-2.5 px-3 text-right whitespace-nowrap">
-              <div class="inline-flex flex-wrap justify-end items-center gap-1">
-                <button type="button" onclick="openCustomerHistory('${c.id}')" title="Ver últimas compras e valores pagos"
-                  class="bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 text-[11px] font-bold px-2 py-1 rounded-lg">
-                  📜 Compras${custOrders.length > 0 ? ` (${custOrders.length})` : ""}
-                </button>
-                <button type="button" onclick="editCustomer('${c.id}')" title="Editar dados e preços especiais"
-                  class="bg-orange-50 hover:bg-orange-100 text-orange-700 border border-orange-200 text-[11px] font-bold px-2 py-1 rounded-lg">
-                  ✏️ Editar
-                </button>
-                <a href="https://wa.me/55${c.phone}?text=${encodeURIComponent(`Olá ${c.name}! Aqui é da ${appState.settings.storeName} 🔥. Tudo bem? Passando para lembrar que se precisar de gás ou registro, estamos com entrega rápida hoje!`)}"
-                   target="_blank"
-                   class="bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold px-2 py-1 rounded-lg">
-                  WA
-                </a>
-                <button type="button" onclick="deleteCustomer('${c.id}')" title="Excluir"
-                  class="bg-red-50 hover:bg-red-100 text-red-600 text-[11px] font-bold px-2 py-1 rounded-lg">
-                  ✕
-                </button>
-              </div>
+            <td class="py-2.5 px-3 text-right whitespace-nowrap space-x-1">
+              <button type="button" onclick="openCustomerReport('${c.id}')" title="Ver relatório de vendas e preços pagos"
+                class="inline-block bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 text-[11px] font-bold px-2 py-1 rounded-lg">
+                📊 Vendas
+              </button>
+              <button type="button" onclick="editCustomer('${c.id}')" title="Editar cadastro e preços do cliente"
+                class="inline-block bg-orange-50 hover:bg-orange-100 text-orange-700 border border-orange-200 text-[11px] font-bold px-2 py-1 rounded-lg">
+                ✏️ Editar
+              </button>
+              <a href="https://wa.me/55${c.phone}?text=${encodeURIComponent(`Olá ${c.name}! Aqui é da ${appState.settings.storeName} 🔥. Tudo bem? Passando para lembrar que se precisar de gás ou registro, estamos com entrega rápida hoje!`)}"
+                 target="_blank"
+                 class="inline-block bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold px-2 py-1 rounded-lg">
+                WA
+              </a>
+              <button type="button" onclick="deleteCustomer('${c.id}')" title="Excluir"
+                class="inline-block bg-red-50 hover:bg-red-100 text-red-600 text-[11px] font-bold px-2 py-1 rounded-lg">
+                ✕
+              </button>
             </td>
           </tr>
         `;
