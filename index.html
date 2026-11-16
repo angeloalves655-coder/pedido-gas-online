@@ -13,437 +13,345 @@
             color: #111827;
             -webkit-tap-highlight-color: transparent;
         }
-        .header-gradient {
-            background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
-        }
-        .glass-pill {
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(8px);
-        }
-        @keyframes pulse-ring {
-            0% { transform: scale(0.95); opacity: 0.7; }
-            50% { transform: scale(1.1); opacity: 0.3; }
-            100% { transform: scale(0.95); opacity: 0.7; }
-        }
-        .animate-pulse-ring {
-            animation: pulse-ring 2s infinite ease-in-out;
+        .header-banner {
+            background: linear-gradient(180deg, #ea580c 0%, #c2410c 100%);
         }
     </style>
 </head>
-<body class="pb-28 max-w-md mx-auto bg-gray-50 min-h-screen shadow-xl relative">
+<body class="bg-[#f3f4f6] min-h-screen max-w-md mx-auto pb-28 relative shadow-lg">
 
-    <!-- Notificação Topo (Ação Concluída / Toast) -->
-    <div id="toast" class="hidden fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-emerald-600 text-white px-4 py-2.5 rounded-full shadow-lg flex items-center gap-2 text-sm font-medium transition-all duration-300">
+    <!-- Topo: ✅ Ação concluída! -->
+    <div id="barra-acao" class="px-4 pt-3 pb-2 flex items-center gap-1.5 text-sm font-semibold text-gray-800">
         <span>✅</span>
-        <span id="toast-msg">Ação concluída!</span>
+        <span>Ação concluída!</span>
     </div>
 
-    <!-- Cabeçalho da Loja -->
-    <header class="header-gradient text-white p-5 rounded-b-3xl shadow-md relative overflow-hidden">
-        <div class="flex justify-between items-start mb-3">
-            <div class="flex items-center gap-2">
-                <span class="text-2xl">🔥</span>
-                <div>
-                    <h1 class="text-xl font-extrabold tracking-tight leading-tight">Sua Empresa Aqui</h1>
-                    <p class="text-orange-100 text-xs">Delivery Rápido & Atendimento Direto</p>
-                </div>
-            </div>
-            <button onclick="toggleHorarioModal()" class="glass-pill text-xs px-3 py-1.5 rounded-full font-semibold flex items-center gap-1.5 border border-white/20">
-                <span id="status-dot" class="w-2 h-2 rounded-full bg-emerald-400"></span>
-                <span id="status-text">Aberto agora</span>
-            </button>
+    <!-- Banner Laranja (Idêntico ao print, sem o nome Telegás) -->
+    <header class="header-banner mx-3 rounded-xl p-4 text-gray-900 shadow-sm relative">
+        <div class="text-xl mb-1">🔥</div>
+        
+        <h1 class="text-3xl font-extrabold tracking-tight text-gray-950 my-2">
+            Sua Loja Aqui
+        </h1>
+
+        <div class="flex items-center gap-2 text-sm font-semibold text-gray-950 mt-2">
+            <span id="status-loja-texto">Aberto agora</span>
+            <span>☁️</span>
+            <span>Online</span>
         </div>
 
-        <div class="flex flex-wrap items-center gap-2 mt-4">
-            <span class="bg-white text-orange-700 text-xs font-bold px-3 py-1 rounded-full shadow-sm flex items-center gap-1">
-                <span>☁️</span> Online
-            </span>
-            <button onclick="alternarModoBalcao()" id="btn-balcao" class="bg-white/95 text-gray-800 text-xs font-semibold px-3 py-1 rounded-full shadow-sm flex items-center gap-1.5 active:scale-95 transition">
-                <span class="w-2 h-2 rounded-full bg-orange-500"></span>
-                <span>Modo Balcão</span>
+        <div class="mt-2.5 flex items-center gap-2">
+            <button onclick="alternarModoBalcao()" id="btn-balcao" class="bg-white text-gray-800 text-xs font-semibold px-3 py-1 rounded-full shadow-xs inline-flex items-center gap-1.5 active:scale-95 transition">
+                <span id="dot-balcao" class="w-2.5 h-2.5 rounded-full bg-gray-400"></span>
+                <span>Balcão</span>
             </button>
-            <button onclick="abrirModalRastreio()" class="bg-orange-900/40 hover:bg-orange-900/60 text-white text-xs font-medium px-3 py-1 rounded-full border border-white/20 flex items-center gap-1 ml-auto">
-                <span>📦</span> Rastrear Pedido
+
+            <button onclick="toggleHorario()" class="bg-black/15 text-white text-xs font-medium px-2.5 py-1 rounded-full ml-auto">
+                Simular Horário
             </button>
         </div>
     </header>
 
-    <!-- Banner de Aviso de Horário (Simulável) -->
-    <div id="banner-fechado" class="hidden mx-4 mt-4 bg-amber-50 border border-amber-200 rounded-2xl p-4 shadow-sm">
-        <div class="flex items-start gap-3">
-            <span class="text-2xl">⏰</span>
-            <div>
-                <h3 class="font-bold text-amber-900 text-sm">Estamos fora do horário de entrega no momento</h3>
-                <p class="text-amber-700 text-xs mt-1 leading-relaxed">
-                    Você pode montar seu pedido agora e enviar para agendar a primeira entrega!
-                </p>
-            </div>
+    <!-- Seção: Acompanhe seu Pedido #0000 -->
+    <section id="painel-acompanhamento" class="px-4 pt-5 pb-4 border-b border-gray-200 bg-[#f3f4f6]">
+        <div class="flex items-center justify-between">
+            <h2 class="text-2xl font-extrabold text-gray-950 tracking-tight">
+                Acompanhe seu Pedido <span id="pedido-numero">#0000</span>
+            </h2>
+            <button onclick="resetarPedido()" title="Fechar / Limpar" class="w-6 h-6 rounded-full bg-gray-200 text-gray-600 text-xs flex items-center justify-center font-bold hover:bg-gray-300">
+                ✕
+            </button>
         </div>
-    </div>
 
-    <!-- Destaques / Benefícios -->
-    <section class="mx-4 mt-4 bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
-        <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center text-xl shrink-0">
-                🛵
-            </div>
-            <div class="flex-1">
-                <div class="flex items-center justify-between">
-                    <h2 class="font-bold text-gray-900 text-sm">Entrega Expressa • Instalação Grátis</h2>
-                    <span class="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">Rápido</span>
-                </div>
-                <p class="text-gray-500 text-xs mt-0.5">Levamos a maquininha até você • Pedido direto no WhatsApp</p>
-            </div>
+        <div class="mt-3">
+            <div class="text-2xl mb-2" id="icone-status">⏳</div>
+            <p class="text-sm font-medium text-gray-900" id="texto-status-principal">
+                Pedido enviado! Aguardando confirmação da loja...
+            </p>
+            <p class="text-sm text-gray-700 mt-3 leading-snug">
+                Mantenha esta tela aberta para ver quando confirmarmos.
+            </p>
+        </div>
+
+        <!-- Lista Numerada 1 a 4 (Exatamente como na imagem) -->
+        <ol class="mt-4 space-y-1 text-sm text-gray-900 font-medium list-decimal list-inside">
+            <li id="step-1" class="font-bold text-emerald-700">Enviado</li>
+            <li id="step-2" class="text-gray-500">Recebido</li>
+            <li id="step-3" class="text-gray-500">Saiu Entrega</li>
+            <li id="step-4" class="text-gray-500">Entregue</li>
+        </ol>
+
+        <div class="mt-3">
+            <button onclick="avancarStatusDemo()" class="text-xs bg-white border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg font-semibold shadow-2xs active:scale-95">
+                Avançar etapa (Demonstração)
+            </button>
         </div>
     </section>
 
-    <!-- Catálogo de Produtos (Exemplo Genérico) -->
-    <main class="px-4 mt-5">
-        <div class="flex items-center justify-between mb-3">
-            <h2 class="font-extrabold text-gray-800 text-base">Escolha seus Produtos</h2>
-            <span class="text-xs text-gray-400">Tabela Demonstrativa</span>
+    <!-- Informações de Entrega (Exatamente como na imagem) -->
+    <section class="px-4 py-4 space-y-3 border-b border-gray-200">
+        <div class="text-xl">🛵</div>
+        <p class="text-sm font-medium text-gray-900">
+            Entrega Expressa • Instalação Grátis
+        </p>
+        <p class="text-sm text-gray-800 leading-snug">
+            Levamos a maquininha até você • Pedido direto no WhatsApp
+        </p>
+        <p class="text-sm font-medium text-gray-900">
+            Rápido
+        </p>
+    </section>
+
+    <!-- Bloco: Estamos fora do horário de entrega no momento -->
+    <section id="bloco-fora-horario" class="px-4 py-4 border-b border-gray-200">
+        <div class="text-xl mb-2">⏰</div>
+        <h3 class="text-lg font-extrabold text-gray-950 leading-tight">
+            Estamos fora do horário de entrega no momento
+        </h3>
+        <p class="text-sm text-gray-800 mt-2 leading-snug">
+            Você pode montar seu pedido agora e enviar para agendar a primeira entrega!
+        </p>
+    </section>
+
+    <!-- Catálogo e Formulário de Pedido (Sem clientes cadastrados) -->
+    <main class="px-4 pt-5 space-y-5">
+        <div>
+            <h3 class="text-base font-extrabold text-gray-900 mb-3">Monte seu Pedido</h3>
+            <div id="lista-produtos" class="space-y-2.5">
+                <!-- Produtos renderizados via JS -->
+            </div>
         </div>
 
-        <div id="lista-produtos" class="space-y-3">
-            <!-- Renderizado via JS -->
-        </div>
-
-        <!-- Seção de Dados do Pedido -->
-        <div class="mt-6 bg-white rounded-2xl p-4 shadow-sm border border-gray-100 space-y-4">
-            <h3 class="font-bold text-gray-800 text-sm border-b border-gray-100 pb-2">Dados para Entrega</h3>
+        <!-- Dados do Cliente (Limpo, sem busca de cadastro) -->
+        <div class="bg-white p-4 rounded-2xl border border-gray-200 space-y-3 shadow-2xs">
+            <h4 class="font-bold text-sm text-gray-900">Seus Dados para Entrega</h4>
             
             <div>
-                <label class="block text-xs font-semibold text-gray-600 mb-1">Seu Nome</label>
-                <input type="text" id="cliente-nome" placeholder="Ex: João da Silva" class="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white transition">
+                <label class="block text-xs font-semibold text-gray-600 mb-1">Nome Completo</label>
+                <input type="text" id="input-nome" placeholder="Digite seu nome" class="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:outline-none focus:border-orange-600">
             </div>
 
             <div>
-                <label class="block text-xs font-semibold text-gray-600 mb-1">Endereço Completo</label>
-                <input type="text" id="cliente-endereco" placeholder="Rua, Número, Bairro" class="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white transition">
+                <label class="block text-xs font-semibold text-gray-600 mb-1">Telefone / WhatsApp</label>
+                <input type="tel" id="input-telefone" placeholder="(00) 00000-0000" class="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:outline-none focus:border-orange-600">
             </div>
 
-            <div class="grid grid-cols-2 gap-3">
+            <div id="campo-endereco">
+                <label class="block text-xs font-semibold text-gray-600 mb-1">Endereço Completo</label>
+                <input type="text" id="input-endereco" placeholder="Rua, número, bairro e referência" class="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:outline-none focus:border-orange-600">
+            </div>
+
+            <div class="grid grid-cols-2 gap-2.5">
                 <div>
                     <label class="block text-xs font-semibold text-gray-600 mb-1">Pagamento</label>
-                    <select id="cliente-pagamento" class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange-500">
-                        <option value="Pix">Pix na Entrega</option>
-                        <option value="Cartão de Crédito/Débito">Cartão (Maquininha)</option>
+                    <select id="input-pagamento" class="w-full px-2.5 py-2 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:outline-none focus:border-orange-600">
+                        <option value="Pix">Pix</option>
+                        <option value="Cartão (Maquininha)">Cartão (Maquininha)</option>
                         <option value="Dinheiro">Dinheiro</option>
                     </select>
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-gray-600 mb-1">Cupom Promocional</label>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">Cupom</label>
                     <div class="flex gap-1">
-                        <input type="text" id="cupom-input" placeholder="Ex: BEMVINDO" class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs uppercase focus:outline-none focus:ring-2 focus:ring-orange-500">
-                        <button onclick="aplicarCupom()" class="bg-gray-800 text-white px-3 rounded-xl text-xs font-bold active:scale-95">OK</button>
+                        <input type="text" id="input-cupom" placeholder="PROMO10" class="w-full px-2.5 py-2 bg-gray-50 border border-gray-300 rounded-xl text-xs uppercase focus:outline-none focus:border-orange-600">
+                        <button onclick="aplicarCupom()" class="bg-gray-900 text-white px-2.5 rounded-xl text-xs font-bold">OK</button>
                     </div>
                 </div>
             </div>
         </div>
     </main>
 
-    <!-- Barra Fixa Inferior de Resumo e Envio -->
-    <div class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white border-t border-gray-200 p-4 shadow-[0_-4px_20px_rgba(0,0,0,0.06)] z-30">
-        <div class="flex items-center justify-between gap-4">
-            <div>
-                <p class="text-xs text-gray-500">Total do Pedido (<span id="qtd-total">0</span> itens)</p>
-                <p class="text-xl font-extrabold text-gray-900" id="valor-total">R$ 0,00</p>
-            </div>
-            <button onclick="finalizarPedido()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-6 rounded-2xl shadow-md shadow-emerald-600/20 flex items-center gap-2 active:scale-95 transition">
-                <span>Fazer Pedido</span>
-                <span>➔</span>
-            </button>
+    <!-- Rodapé Fixo de Finalização -->
+    <div class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white border-t border-gray-200 p-3.5 flex items-center justify-between z-40">
+        <div>
+            <span class="text-xs text-gray-500 block">Total (<span id="resumo-qtd">0</span> itens)</span>
+            <span class="text-lg font-extrabold text-gray-950" id="resumo-total">R$ 0,00</span>
         </div>
-    </div>
-
-    <!-- MODAL: Acompanhe seu Pedido #0000 (Idêntico ao da imagem) -->
-    <div id="modal-rastreio" class="hidden fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-4">
-        <div class="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl relative animate-fade-in">
-            <button onclick="fecharModalRastreio()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center font-bold hover:bg-gray-200">
-                ✕
-            </button>
-
-            <div class="flex items-center gap-2 text-emerald-600 text-xs font-bold mb-2">
-                <span>✅</span>
-                <span>Ação concluída!</span>
-            </div>
-
-            <h2 class="text-xl font-extrabold text-gray-900">Acompanhe seu Pedido <span id="numero-pedido" class="text-orange-600">#0000</span></h2>
-
-            <div class="my-4 bg-orange-50 border border-orange-100 rounded-2xl p-4 flex items-center gap-3">
-                <div class="text-2xl animate-bounce">⏳</div>
-                <div>
-                    <p class="font-bold text-gray-900 text-sm" id="status-pedido-titulo">Pedido enviado! Aguardando confirmação da loja...</p>
-                    <p class="text-xs text-gray-600 mt-0.5">Mantenha esta tela aberta para ver quando confirmarmos.</p>
-                </div>
-            </div>
-
-            <!-- Stepper de Status -->
-            <div class="space-y-3 my-5 pl-2">
-                <div class="flex items-center gap-3 step-item" data-step="1">
-                    <span class="w-6 h-6 rounded-full bg-emerald-600 text-white text-xs font-bold flex items-center justify-center">1</span>
-                    <span class="font-bold text-sm text-gray-900">Enviado</span>
-                </div>
-                <div class="flex items-center gap-3 step-item opacity-40" data-step="2">
-                    <span class="w-6 h-6 rounded-full bg-gray-300 text-gray-700 text-xs font-bold flex items-center justify-center">2</span>
-                    <span class="font-semibold text-sm text-gray-700">Recebido</span>
-                </div>
-                <div class="flex items-center gap-3 step-item opacity-40" data-step="3">
-                    <span class="w-6 h-6 rounded-full bg-gray-300 text-gray-700 text-xs font-bold flex items-center justify-center">3</span>
-                    <span class="font-semibold text-sm text-gray-700">Saiu Entrega</span>
-                </div>
-                <div class="flex items-center gap-3 step-item opacity-40" data-step="4">
-                    <span class="w-6 h-6 rounded-full bg-gray-300 text-gray-700 text-xs font-bold flex items-center justify-center">4</span>
-                    <span class="font-semibold text-sm text-gray-700">Entregue</span>
-                </div>
-            </div>
-
-            <!-- Botão para simular avanço durante apresentação ao cliente -->
-            <div class="pt-3 border-t border-gray-100 flex items-center justify-between gap-2">
-                <button onclick="avancarStatusDemo()" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold px-3 py-2 rounded-xl transition">
-                    🔄 Simular Próximo Status (Demo)
-                </button>
-                <button onclick="enviarParaWhatsApp()" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl transition">
-                    Abrir WhatsApp
-                </button>
-            </div>
-        </div>
+        <button onclick="enviarPedido()" class="bg-[#ea580c] hover:bg-[#c2410c] text-white font-bold px-5 py-3 rounded-xl text-sm shadow-sm active:scale-95 transition">
+            Enviar Pedido no WhatsApp
+        </button>
     </div>
 
     <script>
-        // CONFIGURAÇÕES DA LOJA (Edite aqui para personalizar para cada cliente)
-        const CONFIG_LOJA = {
-            nome: "Sua Empresa Aqui",
-            whatsapp: "5519999999999", // Coloque o número com DDD
-            cupomValido: "BEMVINDO",
-            descontoCupom: 5.00
+        // CONFIGURAÇÕES PARA DEMONSTRAÇÃO (Altere conforme o cliente)
+        const LOJA_CONFIG = {
+            nome: "Sua Loja Aqui",
+            whatsapp: "5519999999999", // Número do WhatsApp da loja com DDI e DDD
+            cupom: "PROMO10",
+            desconto: 10.00
         };
 
-        // PRODUTOS DEMONSTRATIVOS (Sem base de clientes cadastrados)
-        const produtos = [
-            {
-                id: 1,
-                nome: "Produto Principal (Ex: Gás P13 / Combo 1)",
-                descricao: "Entrega expressa com verificação e instalação gratuita.",
-                preco: 110.00,
-                badge: "Mais Pedido",
-                icone: "🔥"
-            },
-            {
-                id: 2,
-                nome: "Produto Secundário (Ex: Água 20L / Combo 2)",
-                descricao: "Produto lacrado com garantia de procedência.",
-                preco: 18.00,
-                badge: "",
-                icone: "💧"
-            },
-            {
-                id: 3,
-                nome: "Kit Completo (Produto 1 + Produto 2)",
-                descricao: "Economize pedindo o kit promocional completo.",
-                preco: 122.00,
-                badge: "Oferta",
-                icone: "⭐"
-            }
+        // PRODUTOS GENÉRICOS PARA DEMONSTRAÇÃO
+        const catalogo = [
+            { id: 1, nome: "Produto Exemplo 1", detalhe: "Entrega rápida e instalação grátis", preco: 110.00 },
+            { id: 2, nome: "Produto Exemplo 2", detalhe: "Retirada ou entrega expressa", preco: 85.00 },
+            { id: 3, nome: "Produto Exemplo 3", detalhe: "Item adicional / Complemento", preco: 18.00 }
         ];
 
         let carrinho = {};
-        let descontoAplicado = 0;
-        let lojaAberta = true;
+        let descontoAtivo = 0;
+        let etapaAtual = 1;
         let modoBalcao = false;
-        let statusAtualDemo = 1;
-        let ultimoResumoWhatsApp = "";
+        let foraHorario = true; // Inicia visível como no print
 
-        function mostrarToast(mensagem) {
-            const toast = document.getElementById('toast');
-            document.getElementById('toast-msg').innerText = mensagem;
-            toast.classList.remove('hidden');
-            setTimeout(() => {
-                toast.classList.add('hidden');
-            }, 3000);
-        }
-
-        function renderizarProdutos() {
-            const container = document.getElementById('lista-produtos');
-            container.innerHTML = produtos.map(prod => {
-                const qtd = carrinho[prod.id] || 0;
+        function renderizarCatalogo() {
+            const lista = document.getElementById('lista-produtos');
+            lista.innerHTML = catalogo.map(item => {
+                const qtd = carrinho[item.id] || 0;
                 return `
-                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between gap-3">
-                        <div class="flex items-start gap-3">
-                            <div class="w-12 h-12 rounded-2xl bg-orange-50 flex items-center justify-center text-2xl shrink-0">
-                                ${prod.icone}
-                            </div>
-                            <div>
-                                <div class="flex items-center gap-2">
-                                    <h3 class="font-bold text-gray-900 text-sm">${prod.nome}</h3>
-                                </div>
-                                ${prod.badge ? `<span class="inline-block bg-orange-100 text-orange-700 text-[10px] font-bold px-2 py-0.5 rounded-full mt-0.5">${prod.badge}</span>` : ''}
-                                <p class="text-xs text-gray-500 mt-1 leading-snug">${prod.descricao}</p>
-                                <p class="font-extrabold text-orange-600 text-sm mt-1.5">R$ ${prod.preco.toFixed(2).replace('.', ',')}</p>
-                            </div>
+                    <div class="bg-white p-3.5 rounded-xl border border-gray-200 flex items-center justify-between gap-3">
+                        <div>
+                            <h4 class="font-bold text-sm text-gray-900">${item.nome}</h4>
+                            <p class="text-xs text-gray-500 mt-0.5">${item.detalhe}</p>
+                            <p class="font-extrabold text-sm text-[#ea580c] mt-1">R$ ${item.preco.toFixed(2).replace('.', ',')}</p>
                         </div>
-
-                        <div class="flex items-center gap-2 bg-gray-50 p-1 rounded-xl border border-gray-200 shrink-0">
-                            <button onclick="alterarQtd(${prod.id}, -1)" class="w-7 h-7 rounded-lg bg-white text-gray-700 font-bold shadow-xs flex items-center justify-center active:scale-90">-</button>
-                            <span class="w-5 text-center font-bold text-sm">${qtd}</span>
-                            <button onclick="alterarQtd(${prod.id}, 1)" class="w-7 h-7 rounded-lg bg-orange-600 text-white font-bold shadow-xs flex items-center justify-center active:scale-90">+</button>
+                        <div class="flex items-center gap-2 bg-gray-100 p-1 rounded-lg">
+                            <button onclick="mudarQtd(${item.id}, -1)" class="w-7 h-7 bg-white rounded-md font-bold text-gray-800 shadow-2xs">-</button>
+                            <span class="w-5 text-center text-sm font-bold">${qtd}</span>
+                            <button onclick="mudarQtd(${item.id}, 1)" class="w-7 h-7 bg-[#ea580c] text-white rounded-md font-bold shadow-2xs">+</button>
                         </div>
                     </div>
                 `;
             }).join('');
         }
 
-        function alterarQtd(id, delta) {
+        function mudarQtd(id, delta) {
             const atual = carrinho[id] || 0;
             const novo = Math.max(0, atual + delta);
-            if (novo === 0) {
-                delete carrinho[id];
-            } else {
-                carrinho[id] = novo;
-            }
-            renderizarProdutos();
-            atualizarTotais();
+            if (novo === 0) delete carrinho[id];
+            else carrinho[id] = novo;
+            renderizarCatalogo();
+            atualizarTotal();
         }
 
         function aplicarCupom() {
-            const input = document.getElementById('cupom-input').value.trim().toUpperCase();
-            if (input === CONFIG_LOJA.cupomValido) {
-                descontoAplicado = CONFIG_LOJA.descontoCupom;
-                mostrarToast(`Cupom aplicado! -R$ ${descontoAplicado.toFixed(2).replace('.', ',')}`);
+            const val = document.getElementById('input-cupom').value.trim().toUpperCase();
+            if (val === LOJA_CONFIG.cupom) {
+                descontoAtivo = LOJA_CONFIG.desconto;
+                alert("Cupom aplicado: -R$ " + descontoAtivo.toFixed(2).replace('.', ','));
             } else {
-                descontoAplicado = 0;
-                mostrarToast("Cupom inválido (Tente: BEMVINDO)");
+                descontoAtivo = 0;
+                alert("Cupom inválido. Use PROMO10 para testar.");
             }
-            atualizarTotais();
+            atualizarTotal();
         }
 
-        function atualizarTotais() {
-            let qtdTotal = 0;
-            let subtotal = 0;
-
-            produtos.forEach(p => {
+        function atualizarTotal() {
+            let qtd = 0;
+            let soma = 0;
+            catalogo.forEach(p => {
                 const q = carrinho[p.id] || 0;
-                qtdTotal += q;
-                subtotal += q * p.preco;
+                qtd += q;
+                soma += q * p.preco;
             });
-
-            const totalFinal = Math.max(0, subtotal - (qtdTotal > 0 ? descontoAplicado : 0));
-            document.getElementById('qtd-total').innerText = qtdTotal;
-            document.getElementById('valor-total').innerText = `R$ ${totalFinal.toFixed(2).replace('.', ',')}`;
-            return { qtdTotal, totalFinal };
-        }
-
-        function toggleHorarioModal() {
-            lojaAberta = !lojaAberta;
-            const dot = document.getElementById('status-dot');
-            const text = document.getElementById('status-text');
-            const banner = document.getElementById('banner-fechado');
-
-            if (lojaAberta) {
-                dot.className = "w-2 h-2 rounded-full bg-emerald-400";
-                text.innerText = "Aberto agora";
-                banner.classList.add('hidden');
-                mostrarToast("Simulação: Loja Aberta");
-            } else {
-                dot.className = "w-2 h-2 rounded-full bg-red-400";
-                text.innerText = "Fechado (Agendar)";
-                banner.classList.remove('hidden');
-                mostrarToast("Simulação: Fora do Horário");
-            }
+            const final = Math.max(0, soma - (qtd > 0 ? descontoAtivo : 0));
+            document.getElementById('resumo-qtd').innerText = qtd;
+            document.getElementById('resumo-total').innerText = "R$ " + final.toFixed(2).replace('.', ',');
+            return { qtd, final };
         }
 
         function alternarModoBalcao() {
             modoBalcao = !modoBalcao;
-            const btn = document.getElementById('btn-balcao');
+            const dot = document.getElementById('dot-balcao');
+            const campoEnd = document.getElementById('campo-endereco');
             if (modoBalcao) {
-                btn.classList.add('ring-2', 'ring-yellow-300');
-                mostrarToast("Modo Balcão Ativado");
+                dot.className = "w-2.5 h-2.5 rounded-full bg-emerald-500";
+                campoEnd.classList.add('hidden');
             } else {
-                btn.classList.remove('ring-2', 'ring-yellow-300');
-                mostrarToast("Modo Delivery Padrão");
+                dot.className = "w-2.5 h-2.5 rounded-full bg-gray-400";
+                campoEnd.classList.remove('hidden');
             }
         }
 
-        function finalizarPedido() {
-            const { qtdTotal, totalFinal } = atualizarTotais();
-            if (qtdTotal === 0) {
-                mostrarToast("Selecione pelo menos 1 produto!");
-                return;
+        function toggleHorario() {
+            foraHorario = !foraHorario;
+            const bloco = document.getElementById('bloco-fora-horario');
+            if (foraHorario) {
+                bloco.classList.remove('hidden');
+            } else {
+                bloco.classList.add('hidden');
             }
-
-            const nome = document.getElementById('cliente-nome').value.trim() || "Cliente Demonstração";
-            const endereco = document.getElementById('cliente-endereco').value.trim() || "Retirada / Endereço a combinar";
-            const pagamento = document.getElementById('cliente-pagamento').value;
-            const numPedido = "#" + Math.floor(1000 + Math.random() * 9000);
-
-            document.getElementById('numero-pedido').innerText = numPedido;
-
-            let itensTexto = "";
-            produtos.forEach(p => {
-                if (carrinho[p.id]) {
-                    itensTexto += `• ${carrinho[p.id]}x ${p.nome}\n`;
-                }
-            });
-
-            ultimoResumoWhatsApp = `*NOVO PEDIDO ${numPedido}*\n` +
-                `👤 *Cliente:* ${nome}\n` +
-                `📍 *Endereço:* ${endereco}\n` +
-                `💳 *Pagamento:* ${pagamento}\n\n` +
-                `*Itens:*\n${itensTexto}\n` +
-                `💰 *Total:* R$ ${totalFinal.toFixed(2).replace('.', ',')}`;
-
-            statusAtualDemo = 1;
-            atualizarVisualStepper();
-            abrirModalRastreio();
-            mostrarToast("Ação concluída!");
-        }
-
-        function abrirModalRastreio() {
-            document.getElementById('modal-rastreio').classList.remove('hidden');
-        }
-
-        function fecharModalRastreio() {
-            document.getElementById('modal-rastreio').classList.add('hidden');
         }
 
         function avancarStatusDemo() {
-            statusAtualDemo = statusAtualDemo < 4 ? statusAtualDemo + 1 : 1;
-            atualizarVisualStepper();
+            etapaAtual = etapaAtual < 4 ? etapaAtual + 1 : 1;
+            atualizarSteps();
         }
 
-        function atualizarVisualStepper() {
-            const titulos = {
+        function atualizarSteps() {
+            const textos = {
                 1: "Pedido enviado! Aguardando confirmação da loja...",
-                2: "Pedido confirmado! Estamos preparando tudo.",
-                3: "O entregador já saiu com o seu pedido! 🛵",
-                4: "Pedido entregue! Obrigado pela preferência. ✅"
+                2: "Pedido recebido e confirmado pela loja!",
+                3: "O entregador saiu para entrega!",
+                4: "Pedido entregue com sucesso!"
             };
-            document.getElementById('status-pedido-titulo').innerText = titulos[statusAtualDemo];
+            const icones = { 1: "⏳", 2: "👍", 3: "🛵", 4: "✅" };
+            document.getElementById('texto-status-principal').innerText = textos[etapaAtual];
+            document.getElementById('icone-status').innerText = icones[etapaAtual];
 
-            document.querySelectorAll('.step-item').forEach(el => {
-                const step = parseInt(el.getAttribute('data-step'));
-                const badge = el.querySelector('span:first-child');
-                if (step <= statusAtualDemo) {
-                    el.classList.remove('opacity-40');
-                    badge.className = "w-6 h-6 rounded-full bg-emerald-600 text-white text-xs font-bold flex items-center justify-center";
+            for (let i = 1; i <= 4; i++) {
+                const el = document.getElementById('step-' + i);
+                if (i <= etapaAtual) {
+                    el.className = "font-bold text-emerald-700";
                 } else {
-                    el.classList.add('opacity-40');
-                    badge.className = "w-6 h-6 rounded-full bg-gray-300 text-gray-700 text-xs font-bold flex items-center justify-center";
+                    el.className = "text-gray-500";
                 }
-            });
+            }
         }
 
-        function enviarParaWhatsApp() {
-            if (!ultimoResumoWhatsApp) {
-                mostrarToast("Monte um pedido primeiro para testar!");
+        function resetarPedido() {
+            document.getElementById('pedido-numero').innerText = "#0000";
+            etapaAtual = 1;
+            atualizarSteps();
+        }
+
+        function enviarPedido() {
+            const { qtd, final } = atualizarTotal();
+            if (qtd === 0) {
+                alert("Adicione pelo menos 1 produto para testar o pedido.");
                 return;
             }
-            const url = `https://wa.me/${CONFIG_LOJA.whatsapp}?text=${encodeURIComponent(ultimoResumoWhatsApp)}`;
+
+            const nome = document.getElementById('input-nome').value.trim() || "Cliente Teste";
+            const tel = document.getElementById('input-telefone').value.trim() || "Não informado";
+            const end = modoBalcao ? "Retirada no Balcão" : (document.getElementById('input-endereco').value.trim() || "Endereço não informado");
+            const pag = document.getElementById('input-pagamento').value;
+
+            const numAleatorio = "#" + Math.floor(1000 + Math.random() * 9000);
+            document.getElementById('pedido-numero').innerText = numAleatorio;
+            etapaAtual = 1;
+            atualizarSteps();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            let resumoItens = "";
+            catalogo.forEach(p => {
+                if (carrinho[p.id]) {
+                    resumoItens += `- ${carrinho[p.id]}x ${p.nome}
+`;
+                }
+            });
+
+            const msg = `*PEDIDO ${numAleatorio}*
+` +
+                `*Cliente:* ${nome}
+` +
+                `*Telefone:* ${tel}
+` +
+                `*Entrega:* ${end}
+` +
+                `*Pagamento:* ${pag}
+
+` +
+                `*Itens:*
+${resumoItens}
+` +
+                `*Total:* R$ ${final.toFixed(2).replace('.', ',')}`;
+
+            const url = `https://wa.me/${LOJA_CONFIG.whatsapp}?text=${encodeURIComponent(msg)}`;
             window.open(url, '_blank');
         }
 
-        // Inicializa
-        renderizarProdutos();
+        renderizarCatalogo();
     </script>
 </body>
 </html>
